@@ -1,10 +1,19 @@
 package models
 
-type Pets struct {
-	// ID do pet
-	ID int `json:"id" example:"1"`
-	// Nome do pet
-	Name string `json:"name" example:"Rex"`
-	// Tipo do animal
-	Type string `json:"type" example:"Cachorro"`
+import (
+	"time"
+)
+
+type Pet struct {
+	IdPet     int       `json:"id"`
+	ClientId  int       `json:"client_id"`
+	Name      string    `json:"name"`
+	Race      string    `json:"race"`
+	Specie    string    `json:"specie"`
+	Cor       string    `json:"cor"`
+	Port      string    `json:"port"`
+	Weight    float64   `json:"weight"`
+	Age       int       `json:"age"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

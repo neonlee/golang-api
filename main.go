@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	// gin-swagger middleware
 )
 
 func main() {
@@ -15,19 +16,37 @@ func main() {
 
 	dbConnection := database.ConnectDB()
 
-	//Camada de repository
+	petsRepo := repositories.NewPetsRepository(dbConnection)
 	userRepo := repositories.NewUserRepository(dbConnection)
-	//Camada de controllers
-	ProductController := Controllers.NewUserHandler(&userRepo)
+	ClientsRepo := repositories.NewClientsRepository(dbConnection)
 
-	server.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	userController := Controllers.NewUserHandler(&userRepo)
+	clientsController := Controllers.NewClientsController(&ClientsRepo)
+	petsController := Controllers.NewPetsController(&petsRepo)
 
-	server.POST("/product", ProductController.CreateUser)
-	server.GET("/product/:productId", ProductController.GetUser)
+	clients := server.Group("/clients")
+	{
+		clients.GET("/", clientsController.GetClients)
+		clients.GET("/:id", clientsController.GetClient)
+		clients.POST("/", clientsController.CreateClients)
+		clients.PUT("/:id", clientsController.UpdateClient)
+		clients.DELETE("/:id", clientsController.DeleteClient)
+	}
+	pets := server.Group("/pets")
+	{
+		pets.GET("/", petsController.GetPets)
+		pets.POST("/", petsController.CreatePets)
+		pets.PUT("/:id", petsController.UpdatePet)
+		pets.DELETE("/:id", petsController.DeletePet)
+		pets.GET("/:id", petsController.GetPet)
+	}
+	// server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	user := server.Group("/users")
+	{
+		user.POST("/", userController.CreateUser)
+		user.GET("/:userId", userController.GetUser)
+	}
 
 	server.Run(":8000")
 

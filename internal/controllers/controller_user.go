@@ -17,7 +17,7 @@ func NewUserHandler(repo *repositories.UserRepository) *ControllerUser {
 	return &ControllerUser{repo: repo}
 }
 
-// @create user statament
+// @create	user statament
 func (h *ControllerUser) CreateUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user)
@@ -37,25 +37,24 @@ func (h *ControllerUser) CreateUser(ctx *gin.Context) {
 }
 
 // GetPets godoc
-// @Summary Lista todos os pets
-// @Description Retorna todos os pets cadastrados
-// @Tags pets
-// @Accept  json
-// @Produce  json
-// @Success 200 {array} Pet
-// @Failure 500 {object} map[string]string
-// @Router /pets/id [get]
+//
+//	@Summary		Lista todos os pets
+//	@Description	Retorna todos os pets cadastrados
+//	@Tags			pets
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}		Pet
+//	@Failure		500	{object}	map[string]string
+//	@Router			/pets/id [get]
 func (h *ControllerUser) GetUser(ctx *gin.Context) {
 	id := ctx.Param("productId")
-	if id == "" {
-		response := models.ResponseError{
-			Message: "Id do produto nao pode ser nulo",
-		}
-		ctx.JSON(http.StatusBadRequest, response)
+
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
 
-	user, err := strconv.Atoi(id)
 	users, err := h.repo.GetByID(user)
 
 	if err != nil {
