@@ -51,31 +51,62 @@ func (r *ClientsRepository) GetClients() (*[]models.Clients, error) {
 }
 
 func (r *ClientsRepository) GetClient(id int) (*models.Clients, error) {
-	user := &models.Clients{}
-	query := `SELECT * FROM clientes WHERE id = $1`
-	rows, err := r.connection.Prepare(query)
+	user := &models.Clients{
+		Pets: []models.Pet{},
+	}
+
+	query := `
+		SELECT 
+			c.id, c.petshop_id, c.nome, c.telefone, c.email, c.endereco,
+			p.id, p.nome
+		FROM clientes c
+		LEFT JOIN pets p ON p.cliente_id = c.id
+		WHERE c.id = $1
+	`
+
+	rows, err := r.connection.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	err = rows.QueryRow(id).Scan(
-		&user.PetshopId,
-		&user.Id,
-		&user.Nome,
-		&user.Telefone,
-		&user.Email,
-		&user.Endereco,
-	)
+	first := true
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
+	for rows.Next() {
+		var (
+			clienteID int
+			petshopID int
+			nome      string
+			telefone  string
+			email     string
+			endereco  string
+			petID     sql.NullInt64
+			petNome   sql.NullString
+		)
+
+		if err := rows.Scan(&clienteID, &petshopID, &nome, &telefone, &email, &endereco, &petID, &petNome); err != nil {
+			return nil, err
 		}
 
-		return nil, err
+		if first {
+			user.Id = clienteID
+			user.PetshopId = petshopID
+			user.Nome = nome
+			user.Telefone = telefone
+			user.Email = email
+			user.Endereco = endereco
+			first = false
+		}
+
+		if petID.Valid {
+			user.Pets = append(user.Pets, models.Pet{
+				IdPet:    int(petID.Int64),
+				Name:     petNome.String,
+				ClientId: clienteID,
+			})
+		}
 	}
 
-	rows.Close()
 	return user, nil
 }
 

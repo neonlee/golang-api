@@ -43,7 +43,7 @@ func (h *ControllerUser) CreateUser(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		models.User
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets/id [get]
 func (h *ControllerUser) GetUser(ctx *gin.Context) {

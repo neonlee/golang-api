@@ -13,4 +13,5 @@ type Clients struct {
 	Endereco  string    `json:"endereco"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Pets      []Pet     `json:"pets,omitempty"`
 }

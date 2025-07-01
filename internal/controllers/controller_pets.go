@@ -24,7 +24,7 @@ func NewPetsController(connection *repositories.PetsRepository) *ControllersPets
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) GetPets(ctx *gin.Context) {
@@ -44,7 +44,7 @@ func (p *ControllersPets) GetPets(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) GetPet(ctx *gin.Context) {
@@ -72,7 +72,7 @@ func (p *ControllersPets) GetPet(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) UpdatePet(ctx *gin.Context) {
@@ -104,7 +104,7 @@ func (p *ControllersPets) UpdatePet(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) CreatePets(ctx *gin.Context) {
@@ -131,7 +131,7 @@ func (p *ControllersPets) CreatePets(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		Pet
+//	@Success		200	{array}		bool
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) DeletePet(ctx *gin.Context) {

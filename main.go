@@ -7,6 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	// docs "petApi/docs"
 	// gin-swagger middleware
 )
 
@@ -40,13 +43,14 @@ func main() {
 		pets.DELETE("/:id", petsController.DeletePet)
 		pets.GET("/:id", petsController.GetPet)
 	}
-	// server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	user := server.Group("/users")
 	{
 		user.POST("/", userController.CreateUser)
 		user.GET("/:userId", userController.GetUser)
 	}
+
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	server.Run(":8000")
 
