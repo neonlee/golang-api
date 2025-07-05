@@ -9,8 +9,6 @@ import (
 	_ "github.com/lib/pq"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	// docs "petApi/docs"
-	// gin-swagger middleware
 )
 
 func main() {
@@ -22,10 +20,12 @@ func main() {
 	petsRepo := repositories.NewPetsRepository(dbConnection)
 	userRepo := repositories.NewUserRepository(dbConnection)
 	ClientsRepo := repositories.NewClientsRepository(dbConnection)
+	servicesRepo := repositories.NewServicesRepository(dbConnection)
 
 	userController := Controllers.NewUserHandler(&userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
 	petsController := Controllers.NewPetsController(&petsRepo)
+	servicesController := Controllers.NewServicesController(&servicesRepo)
 
 	clients := server.Group("/clients")
 	{
@@ -35,6 +35,16 @@ func main() {
 		clients.PUT("/:id", clientsController.UpdateClient)
 		clients.DELETE("/:id", clientsController.DeleteClient)
 	}
+
+	services := server.Group("/services")
+	{
+		services.GET("/", servicesController.GetServices)
+		services.GET("/:id", servicesController.GetService)
+		services.POST("/", servicesController.CreateServices)
+		services.PUT("/:id", servicesController.UpdateService)
+		services.DELETE("/:id", servicesController.DeleteService)
+	}
+
 	pets := server.Group("/pets")
 	{
 		pets.GET("/", petsController.GetPets)
