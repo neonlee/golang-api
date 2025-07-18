@@ -3,26 +3,20 @@ package repositories
 import (
 	"database/sql"
 	"petApi/internal/models"
+
+	"gorm.io/gorm"
 )
 
 type ClientsRepository struct {
-	connection *sql.DB
+	connection *gorm.DB
 }
 
-func NewClientsRepository(connection *sql.DB) ClientsRepository {
+func NewClientsRepository(connection *gorm.DB) ClientsRepository {
 	return ClientsRepository{connection: connection}
 }
 
 func (r *ClientsRepository) Create(user models.Clients) (*models.Clients, error) {
-	query, err := r.connection.Prepare("INSERT INTO clientes (petshop_id, nome, telefone, email, endereco)" +
-		" VALUES ($1, $2, $3, $4, $5) RETURNING id")
-	if err != nil {
-		return nil, err
-	}
-
-	err = query.QueryRow(user.PetshopId, user.Nome, user.Telefone, user.Email, user.Endereco).Scan(
-		&user.Id,
-	)
+	err := r.connection.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +27,7 @@ func (r *ClientsRepository) Create(user models.Clients) (*models.Clients, error)
 
 func (r *ClientsRepository) GetClients() (*[]models.Clients, error) {
 
-	rows, err := r.connection.Query("SELECT id, nome, email FROM clientes")
+	rows, err := r.connection.First("SELECT id, nome, email FROM clientes")
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +105,6 @@ func (r *ClientsRepository) GetClient(id int) (*models.Clients, error) {
 }
 
 func (r *ClientsRepository) UpdateClient(id int, cliente models.Clients) (*models.Clients, error) {
-	query := "UPDATE clientes SET nome = $1, email = $2, endereco = $3, telefone = $4 WHERE id = $5"
 	rows, err := r.connection.Exec(query, cliente.Nome, cliente.Email, cliente.Endereco, cliente.Telefone, id)
 	if err != nil {
 		return nil, err

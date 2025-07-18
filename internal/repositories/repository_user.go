@@ -3,13 +3,15 @@ package repositories
 import (
 	"database/sql"
 	"petApi/internal/models"
+
+	"gorm.io/gorm"
 )
 
 type UserRepository struct {
-	connection *sql.DB
+	connection *gorm.DB
 }
 
-func NewUserRepository(connection *sql.DB) UserRepository {
+func NewUserRepository(connection *gorm.DB) UserRepository {
 	return UserRepository{connection: connection}
 }
 

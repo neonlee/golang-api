@@ -3,13 +3,15 @@ package repositories
 import (
 	"database/sql"
 	"petApi/internal/models"
+
+	"gorm.io/gorm"
 )
 
 type PetsRepository struct {
-	connection *sql.DB
+	connection *gorm.DB
 }
 
-func NewPetsRepository(connection *sql.DB) PetsRepository {
+func NewPetsRepository(connection *gorm.DB) PetsRepository {
 	return PetsRepository{connection: connection}
 }
 
