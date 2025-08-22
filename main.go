@@ -3,6 +3,7 @@ package main
 import (
 	Controllers "petApi/internal/controllers"
 	"petApi/internal/repositories"
+	"petApi/migrations"
 	"petApi/pkg/database"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,9 @@ func main() {
 	server := gin.Default()
 
 	dbConnection := database.ConnectDB()
+
+	m := migrations.NewMigrationsDB(dbConnection)
+	m.RunMigrations()
 
 	petsRepo := repositories.NewPetsRepository(dbConnection)
 	userRepo := repositories.NewUserRepository(dbConnection)

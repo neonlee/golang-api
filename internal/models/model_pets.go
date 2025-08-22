@@ -5,17 +5,17 @@ import (
 )
 
 type Pet struct {
-	IdPet       int       `json:"id"`
-	ClientId    int       `json:"client_id"`
-	Name        string    `json:"name"`
-	Race        string    `json:"race"`
-	Specie      string    `json:"specie"`
-	Cor         string    `json:"cor"`
-	Port        string    `json:"port"`
-	Weight      float64   `json:"weight"`
-	Age         int       `json:"age"`
-	Observation string    `json:"observation"`
-	Sexy        string    `json:"sexy"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int       `gorm:"column:id;primaryKey" json:"id"`
+	ClientID    int       `gorm:"column:client_id;index;not null" json:"client_id"`
+	Name        string    `gorm:"column:nome" json:"name"`
+	Race        string    `gorm:"column:raca" json:"race"`
+	Specie      string    `gorm:"column:especie" json:"specie"`
+	Color       string    `gorm:"column:cor" json:"color"`
+	Size        string    `gorm:"column:porte" json:"size"`
+	Weight      float64   `gorm:"column:peso" json:"weight"`
+	Age         int       `gorm:"column:idade" json:"age"`
+	Observation string    `gorm:"column:observacao" json:"observation"`
+	Sex         string    `gorm:"column:sexo" json:"sex"`
+	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt   time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

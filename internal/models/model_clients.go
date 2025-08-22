@@ -4,15 +4,15 @@ import (
 	"time"
 )
 
-type Clients struct {
-	PetshopId   int       `json:"petshop_id"`
-	Id          int       `json:"id"`
-	Nome        string    `json:"name"`
-	Observacoes string    `json:"observacoes"`
-	Telefone    string    `json:"telefone"`
-	Email       string    `json:"email"`
-	Endereco    string    `json:"endereco"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	Pets        []Pet     `json:"pets,omitempty"`
+type Client struct { // Mudando para singular (boa prática)
+	PetshopID    int       `gorm:"column:petshop_id" json:"petshop_id"`
+	ID           int       `gorm:"column:id;primaryKey" json:"id"`
+	Name         string    `gorm:"column:nome" json:"name"`
+	Observations string    `gorm:"column:observacoes" json:"observations"`
+	Phone        string    `gorm:"column:telefone" json:"phone"`
+	Email        string    `gorm:"column:email" json:"email"`
+	Address      string    `gorm:"column:endereco" json:"address"`
+	CreatedAt    time.Time `gorm:"column:created_at" json:"created_at"` // Corrigido create_at para created_at
+	UpdatedAt    time.Time `gorm:"column:updated_at" json:"updated_at"`
+	Pets         []Pet     `gorm:"foreignKey:ClientID;references:id" json:"pets,omitempty"`
 }
