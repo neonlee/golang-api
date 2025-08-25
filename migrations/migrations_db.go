@@ -17,4 +17,5 @@ func NewMigrationsDB(db *gorm.DB) *MigrationsDB {
 func (r *MigrationsDB) RunMigrations() {
 	r.connection.Table("client").AutoMigrate(models.Client{})
 	r.connection.Table("pet").AutoMigrate(models.Pet{})
+	r.connection.Table("service").AutoMigrate(models.Service{})
 }

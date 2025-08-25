@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-type Services struct {
-	PetshopId int       `json:"petshop_id"`
-	Id        int       `json:"id"`
-	Nome      string    `json:"name"`
-	Descricao string    `json:"description"`
-	Preco     float64   `json:"price"`
-	Tipo      string    `json:"type"`
-	Duracao   time.Time `json:"duration"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type Service struct {
+	PetshopId int       `gorm:"column:petshop_id;index;not null" json:"petshop_id"`
+	Id        int       `gorm:"column:id;primaryKey" json:"id"`
+	Nome      string    `gorm:"column:nome" json:"name"`
+	Descricao string    `gorm:"column:descricao" json:"description"`
+	Active    bool      `gorm:"column:ativo" json:"active"`
+	Preco     float64   `gorm:"column:preco" json:"price"`
+	Duracao   string    `gorm:"column:duracao;type:interval" json:"duration"`
+	CreatedAt time.Time `gorm:"column:create_at" json:"created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
