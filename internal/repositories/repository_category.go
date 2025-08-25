@@ -10,7 +10,7 @@ type CategoryRepository struct {
 	connection *gorm.DB
 }
 
-func NewCategoryController(connection *gorm.DB) CategoryRepository {
+func NewCategoryRepository(connection *gorm.DB) CategoryRepository {
 	return CategoryRepository{connection: connection}
 }
 

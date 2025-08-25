@@ -18,4 +18,6 @@ func (r *MigrationsDB) RunMigrations() {
 	r.connection.Table("client").AutoMigrate(models.Client{})
 	r.connection.Table("pet").AutoMigrate(models.Pet{})
 	r.connection.Table("service").AutoMigrate(models.Service{})
+	r.connection.Table("category").AutoMigrate(models.Category{})
+	r.connection.Table("tenant").AutoMigrate(models.Tenant{})
 }

@@ -25,13 +25,15 @@ func main() {
 	userRepo := repositories.NewUserRepository(dbConnection)
 	ClientsRepo := repositories.NewClientsRepository(dbConnection)
 	servicesRepo := repositories.NewServicesRepository(dbConnection)
-	cateogryRepo := repositories.NewCategoryController(dbConnection)
+	cateogryRepo := repositories.NewCategoryRepository(dbConnection)
+	tenantRepo := repositories.NewTenantRepository(dbConnection)
 
 	userController := Controllers.NewUserHandler(&userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
 	petsController := Controllers.NewPetsController(&petsRepo)
 	servicesController := Controllers.NewServicesController(&servicesRepo)
 	categoryController := Controllers.NewCategoryController(&cateogryRepo)
+	tenantController := Controllers.NewTenantController(&tenantRepo)
 
 	clients := server.Group("/clients")
 	{
@@ -41,6 +43,15 @@ func main() {
 		clients.PUT("/:id", clientsController.UpdateClient)
 		clients.DELETE("/:id", clientsController.DeleteClient)
 	}
+	tentant := server.Group("/tenant")
+	{
+		tentant.GET("/", tenantController.GetTenants)
+		tentant.GET("/:id", tenantController.Get)
+		tentant.POST("/", tenantController.Create)
+		tentant.PUT("/:id", tenantController.Update)
+		tentant.DELETE("/:id", tenantController.Delete)
+	}
+
 	category := server.Group("/category")
 	{
 		category.GET("/", categoryController.GetCategorys)
@@ -49,6 +60,7 @@ func main() {
 		category.PUT("/:id", categoryController.Update)
 		category.DELETE("/:id", categoryController.Delete)
 	}
+
 	services := server.Group("/services")
 	{
 		services.GET("/", servicesController.GetServices)
