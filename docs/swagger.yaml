@@ -1,11 +1,9 @@
 definitions:
-  models.Clients:
+  models.Category:
     properties:
       created_at:
         type: string
-      email:
-        type: string
-      endereco:
+      description:
         type: string
       id:
         type: integer
@@ -13,7 +11,75 @@ definitions:
         type: string
       petshop_id:
         type: integer
-      telefone:
+      updated_at:
+        type: string
+    type: object
+  models.Client:
+    properties:
+      address:
+        type: string
+      created_at:
+        description: Corrigido create_at para created_at
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      observations:
+        type: string
+      pets:
+        items:
+          $ref: '#/definitions/models.Pet'
+        type: array
+      petshop_id:
+        type: integer
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Employee:
+    properties:
+      active:
+        type: string
+      cellphone:
+        type: string
+      cpf:
+        type: string
+      created_at:
+        description: |-
+          UserID    int       `gorm:"column:user_id;foreignKey:UserID" json:"user_id"`
+          User      User      `gorm:"foreignKey:UserID" json:"usuario"`
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      petshop_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Modulo:
+    properties:
+      created_at:
+        type: string
+      descricao:
+        type: string
+      icone:
+        description: Ícone para o menu
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      ordem:
+        description: Ordem no menu
+        type: integer
+      rota:
+        description: Rota principal do módulo
         type: string
       updated_at:
         type: string
@@ -24,7 +90,7 @@ definitions:
         type: integer
       client_id:
         type: integer
-      cor:
+      color:
         type: string
       created_at:
         type: string
@@ -32,9 +98,13 @@ definitions:
         type: integer
       name:
         type: string
-      port:
+      observation:
         type: string
       race:
+        type: string
+      sex:
+        type: string
+      size:
         type: string
       specie:
         type: string
@@ -43,30 +113,113 @@ definitions:
       weight:
         type: number
     type: object
-  models.Role:
-    enum:
-    - admin
-    - manager
-    - customer
-    type: string
-    x-enum-varnames:
-    - RoleAdmin
-    - RoleManager
-    - RoleCustomer
-  models.User:
+  models.Service:
     properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      petshop_id:
+        type: integer
+      price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  models.Tenant:
+    properties:
+      config:
+        $ref: '#/definitions/models.WhitelabelConfig'
+      created_at:
+        type: string
+      domain:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.TipoAcesso:
+    properties:
+      created_at:
+        type: string
+      descricao:
+        type: string
+      id:
+        type: integer
+      modulos:
+        items:
+          $ref: '#/definitions/models.Modulo'
+        type: array
+      nome:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Users:
+    properties:
+      ativo:
+        type: boolean
       created_at:
         type: string
       email:
         type: string
       id:
         type: integer
-      name:
+      password:
         type: string
-      role:
-        $ref: '#/definitions/models.Role'
+      tipo_acesso:
+        $ref: '#/definitions/models.TipoAcesso'
+      tipo_acesso_id:
+        type: integer
       updated_at:
         type: string
+      username:
+        type: string
+    type: object
+  models.WhitelabelConfig:
+    properties:
+      api:
+        properties:
+          allowed_origins:
+            items:
+              type: string
+            type: array
+          rate_limit:
+            type: integer
+        type: object
+      branding:
+        properties:
+          company_name:
+            type: string
+          logo_url:
+            type: string
+          primary_color:
+            type: string
+          secondary_color:
+            type: string
+        type: object
+      features:
+        properties:
+          enable_feature_x:
+            type: boolean
+          enable_feature_y:
+            type: boolean
+          max_users:
+            type: integer
+        type: object
     type: object
 info:
   contact: {}
@@ -106,7 +259,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Clients'
+              $ref: '#/definitions/models.Tenant'
             type: array
         "500":
           description: Internal Server Error
@@ -129,7 +282,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Clients'
+              $ref: '#/definitions/models.Tenant'
             type: array
         "500":
           description: Internal Server Error
@@ -175,7 +328,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.Users'
             type: array
         "500":
           description: Internal Server Error

@@ -69,7 +69,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Clients"
+                                "$ref": "#/definitions/models.Tenant"
                             }
                         }
                     },
@@ -104,7 +104,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Clients"
+                                "$ref": "#/definitions/models.Tenant"
                             }
                         }
                     },
@@ -174,7 +174,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.Users"
                             }
                         }
                     },
@@ -192,16 +192,13 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Clients": {
+        "models.Category": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
-                "email": {
-                    "type": "string"
-                },
-                "endereco": {
+                "description": {
                     "type": "string"
                 },
                 "id": {
@@ -213,7 +210,105 @@ const docTemplate = `{
                 "petshop_id": {
                     "type": "integer"
                 },
-                "telefone": {
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Client": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "Corrigido create_at para created_at",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "observations": {
+                    "type": "string"
+                },
+                "pets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Pet"
+                    }
+                },
+                "petshop_id": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Employee": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "string"
+                },
+                "cellphone": {
+                    "type": "string"
+                },
+                "cpf": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "UserID    int       ` + "`" + `gorm:\"column:user_id;foreignKey:UserID\" json:\"user_id\"` + "`" + `\nUser      User      ` + "`" + `gorm:\"foreignKey:UserID\" json:\"usuario\"` + "`" + `",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "petshop_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Modulo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "icone": {
+                    "description": "Ícone para o menu",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "ordem": {
+                    "description": "Ordem no menu",
+                    "type": "integer"
+                },
+                "rota": {
+                    "description": "Rota principal do módulo",
                     "type": "string"
                 },
                 "updated_at": {
@@ -230,7 +325,7 @@ const docTemplate = `{
                 "client_id": {
                     "type": "integer"
                 },
-                "cor": {
+                "color": {
                     "type": "string"
                 },
                 "created_at": {
@@ -242,10 +337,16 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "port": {
+                "observation": {
                     "type": "string"
                 },
                 "race": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "string"
+                },
+                "size": {
                     "type": "string"
                 },
                 "specie": {
@@ -259,22 +360,96 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Role": {
-            "type": "string",
-            "enum": [
-                "admin",
-                "manager",
-                "customer"
-            ],
-            "x-enum-varnames": [
-                "RoleAdmin",
-                "RoleManager",
-                "RoleCustomer"
-            ]
-        },
-        "models.User": {
+        "models.Service": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "petshop_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Tenant": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/models.WhitelabelConfig"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TipoAcesso": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "modulos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Modulo"
+                    }
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Users": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "type": "boolean"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -284,14 +459,70 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "password": {
                     "type": "string"
                 },
-                "role": {
-                    "$ref": "#/definitions/models.Role"
+                "tipo_acesso": {
+                    "$ref": "#/definitions/models.TipoAcesso"
+                },
+                "tipo_acesso_id": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WhitelabelConfig": {
+            "type": "object",
+            "properties": {
+                "api": {
+                    "type": "object",
+                    "properties": {
+                        "allowed_origins": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "rate_limit": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "branding": {
+                    "type": "object",
+                    "properties": {
+                        "company_name": {
+                            "type": "string"
+                        },
+                        "logo_url": {
+                            "type": "string"
+                        },
+                        "primary_color": {
+                            "type": "string"
+                        },
+                        "secondary_color": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "features": {
+                    "type": "object",
+                    "properties": {
+                        "enable_feature_x": {
+                            "type": "boolean"
+                        },
+                        "enable_feature_y": {
+                            "type": "boolean"
+                        },
+                        "max_users": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         }

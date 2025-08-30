@@ -9,25 +9,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllersCategory struct {
-	repository *repositories.CategoryRepository
+type ControllersEmployee struct {
+	repository *repositories.EmployeeRepository
 }
 
-func NewCategoryController(connection *repositories.CategoryRepository) *ControllersCategory {
-	return &ControllersCategory{repository: connection}
+func NewEmployeeController(connection *repositories.EmployeeRepository) *ControllersEmployee {
+	return &ControllersEmployee{repository: connection}
 }
 
-// UpdateService godoc
+// UpdateClient godoc
 //
-//	@Summary		atualiza o serviço
-//	@Description	atualiza o serviço
+//	@Summary		atualiza o cliente
+//	@Description	atualiza o cliente
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Category
+//	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-func (p *ControllersCategory) Update(ctx *gin.Context) {
+func (p *ControllersEmployee) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := strconv.Atoi(id)
@@ -35,12 +35,12 @@ func (p *ControllersCategory) Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	var cliente models.Category
+	var cliente models.Employee
 	if err := ctx.BindJSON(&cliente); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	client, err := p.repository.UpdateCategorys(user, cliente)
+	client, err := p.repository.UpdateEmployee(user, cliente)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -56,10 +56,10 @@ func (p *ControllersCategory) Update(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Category
+//	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client/:id [get]
-func (p *ControllersCategory) Get(ctx *gin.Context) {
+func (p *ControllersEmployee) Get(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := strconv.Atoi(id)
@@ -67,7 +67,7 @@ func (p *ControllersCategory) Get(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.GetCategory(user)
+	client, err := p.repository.GetEmployee(user)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -76,18 +76,18 @@ func (p *ControllersCategory) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
-// GetServices godoc
+// GetClients godoc
 //
 //	@Summary		Lista todos os clientes
 //	@Description	Retorna todos os clientes cadastrados
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Category
+//	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-func (p *ControllersCategory) GetCategorys(ctx *gin.Context) {
-	result, err := p.repository.GetCategorys()
+func (p *ControllersEmployee) GetEmployee(ctx *gin.Context) {
+	result, err := p.repository.GetEmployees()
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -103,11 +103,11 @@ func (p *ControllersCategory) GetCategorys(ctx *gin.Context) {
 //	@Tags			clients
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Category
+//	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
-func (p *ControllersCategory) Create(ctx *gin.Context) {
-	var client models.Category
+func (p *ControllersEmployee) Create(ctx *gin.Context) {
+	var client models.Employee
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -123,7 +123,7 @@ func (p *ControllersCategory) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-// DeleteService godoc
+// DeleteClient godoc
 //
 //	@Summary		Deleta um cliente
 //	@Description	deleta um cliente
@@ -133,7 +133,7 @@ func (p *ControllersCategory) Create(ctx *gin.Context) {
 //	@Success		200	{array}		bool
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
-func (p *ControllersCategory) Delete(ctx *gin.Context) {
+func (p *ControllersEmployee) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := strconv.Atoi(id)
@@ -141,7 +141,7 @@ func (p *ControllersCategory) Delete(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.DeleteCategorys(user)
+	client, err := p.repository.DeleteEmployee(user)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)

@@ -27,6 +27,7 @@ func main() {
 	servicesRepo := repositories.NewServicesRepository(dbConnection)
 	cateogryRepo := repositories.NewCategoryRepository(dbConnection)
 	tenantRepo := repositories.NewTenantRepository(dbConnection)
+	employeeRepo := repositories.NewEmployeeRepository(dbConnection)
 
 	userController := Controllers.NewUserHandler(&userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
@@ -34,6 +35,7 @@ func main() {
 	servicesController := Controllers.NewServicesController(&servicesRepo)
 	categoryController := Controllers.NewCategoryController(&cateogryRepo)
 	tenantController := Controllers.NewTenantController(&tenantRepo)
+	employeeController := Controllers.NewEmployeeController(&employeeRepo)
 
 	clients := server.Group("/clients")
 	{
@@ -43,6 +45,15 @@ func main() {
 		clients.PUT("/:id", clientsController.UpdateClient)
 		clients.DELETE("/:id", clientsController.DeleteClient)
 	}
+	employee := server.Group("/employee")
+	{
+		employee.GET("/", employeeController.Get)
+		employee.GET("/:id", employeeController.GetEmployee)
+		employee.POST("/", employeeController.Create)
+		employee.PUT("/:id", employeeController.Update)
+		employee.DELETE("/:id", employeeController.Delete)
+	}
+
 	tentant := server.Group("/tenant")
 	{
 		tentant.GET("/", tenantController.GetTenants)

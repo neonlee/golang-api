@@ -24,7 +24,7 @@ func NewTenantController(connection *repositories.TenantRepository) *Controllers
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Tenant
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersTentant) Update(ctx *gin.Context) {
@@ -56,7 +56,7 @@ func (p *ControllersTentant) Update(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Tenant
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client/:id [get]
 func (p *ControllersTentant) Get(ctx *gin.Context) {
@@ -83,7 +83,7 @@ func (p *ControllersTentant) Get(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Tenant
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersTentant) GetTenants(ctx *gin.Context) {
@@ -103,7 +103,7 @@ func (p *ControllersTentant) GetTenants(ctx *gin.Context) {
 //	@Tags			clients
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Tenant
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersTentant) Create(ctx *gin.Context) {

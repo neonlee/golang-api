@@ -5,31 +5,29 @@ import (
 )
 
 type Tenant struct {
-	ID        int       `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	Domain    string    `json:"domain" db:"domain"`
-	Config    JSONB     `json:"config" db:"config"`
-	IsActive  bool      `json:"is_active" db:"is_active"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	Id        int              `gorm:"column:id;primaryKey" json:"id"`
+	Name      string           `gorm:"column:name" json:"name"`
+	Domain    string           `gorm:"column:domain" json:"domain"`
+	Config    WhitelabelConfig `gorm:"column:config" json:"config"`
+	IsActive  bool             `gorm:"column:is_active" json:"is_active"`
+	CreatedAt time.Time        `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt time.Time        `gorm:"column:updated_at" json:"updated_at"`
 }
-
-type JSONB map[string]interface{}
 
 type WhitelabelConfig struct {
 	Branding struct {
-		PrimaryColor   string `json:"primary_color"`
-		SecondaryColor string `json:"secondary_color"`
-		LogoURL        string `json:"logo_url"`
-		CompanyName    string `json:"company_name"`
+		PrimaryColor   string `gorm:"column:primary_color" json:"primary_color"`
+		SecondaryColor string `gorm:"column:secondary_color" json:"secondary_color"`
+		LogoURL        string `gorm:"column:logo_url" json:"logo_url"`
+		CompanyName    string `gorm:"column:company_name" json:"company_name"`
 	} `json:"branding"`
 	Features struct {
-		EnableFeatureX bool `json:"enable_feature_x"`
-		EnableFeatureY bool `json:"enable_feature_y"`
-		MaxUsers       int  `json:"max_users"`
+		EnableFeatureX bool `gorm:"column:enable_feature_x" json:"enable_feature_x"`
+		EnableFeatureY bool `gorm:"column:enable_feature_y" json:"enable_feature_y"`
+		MaxUsers       int  `gorm:"column:max_users" json:"max_users"`
 	} `json:"features"`
 	API struct {
-		RateLimit      int      `json:"rate_limit"`
-		AllowedOrigins []string `json:"allowed_origins"`
+		RateLimit      int      `gorm:"column:rate_limit" json:"rate_limit"`
+		AllowedOrigins []string `gorm:"column:allowed_origins" json:"allowed_origins"`
 	} `json:"api"`
 }

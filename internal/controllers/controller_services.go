@@ -24,7 +24,7 @@ func NewServicesController(connection *repositories.ServicesRepository) *Control
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersServices) UpdateService(ctx *gin.Context) {
@@ -56,7 +56,7 @@ func (p *ControllersServices) UpdateService(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client/:id [get]
 func (p *ControllersServices) GetService(ctx *gin.Context) {
@@ -83,7 +83,7 @@ func (p *ControllersServices) GetService(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersServices) GetServices(ctx *gin.Context) {
@@ -103,7 +103,7 @@ func (p *ControllersServices) GetServices(ctx *gin.Context) {
 //	@Tags			clients
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Services
+//	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersServices) CreateServices(ctx *gin.Context) {

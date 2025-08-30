@@ -17,9 +17,18 @@ func NewUserHandler(repo *repositories.UserRepository) *ControllerUser {
 	return &ControllerUser{repo: repo}
 }
 
-// @create	user statament
+// GetPets godoc
+//
+// @Summary		Lista todos os pets
+// @Description	Retorna todos os pets cadastrados
+// @Tags			pets
+// @Accept			json
+// @Produce		json
+// @Success		200	{array}		models.Users
+// @Failure		500	{object}	map[string]string
+// @Router			/pets/id [get]
 func (h *ControllerUser) CreateUser(ctx *gin.Context) {
-	var user models.User
+	var user models.Users
 	err := ctx.BindJSON(&user)
 
 	if err != nil {
@@ -43,7 +52,7 @@ func (h *ControllerUser) CreateUser(ctx *gin.Context) {
 //	@Tags			pets
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.User
+//	@Success		200	{array}		models.Users
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets/id [get]
 func (h *ControllerUser) GetUser(ctx *gin.Context) {

@@ -24,7 +24,7 @@ func NewClientsController(connection *repositories.ClientsRepository) *Controlle
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Clients
+//	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersClients) UpdateClient(ctx *gin.Context) {
@@ -56,7 +56,7 @@ func (p *ControllersClients) UpdateClient(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Clients
+//	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client/:id [get]
 func (p *ControllersClients) GetClient(ctx *gin.Context) {
@@ -83,7 +83,7 @@ func (p *ControllersClients) GetClient(ctx *gin.Context) {
 //	@Tags			client
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Clients
+//	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersClients) GetClients(ctx *gin.Context) {
@@ -103,7 +103,7 @@ func (p *ControllersClients) GetClients(ctx *gin.Context) {
 //	@Tags			clients
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Clients
+//	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersClients) CreateClients(ctx *gin.Context) {

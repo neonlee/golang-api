@@ -32,14 +32,14 @@ func NewUserRepository(connection *gorm.DB) UserRepository {
 // }
 
 // Adicione role nas consultas SQL
-func (r *UserRepository) Create(user models.User) (*models.User, error) {
-	users := &models.User{}
+func (r *UserRepository) Create(user models.Users) (*models.Users, error) {
+	users := &models.Users{}
 
 	return users, nil
 }
 
-func (repository *UserRepository) GetByID(id int) (*models.User, error) {
-	user := &models.User{}
+func (repository *UserRepository) GetByID(id int) (*models.Users, error) {
+	user := &models.Users{}
 
 	return user, nil
 
