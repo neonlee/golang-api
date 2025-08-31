@@ -28,6 +28,7 @@ func main() {
 	cateogryRepo := repositories.NewCategoryRepository(dbConnection)
 	tenantRepo := repositories.NewTenantRepository(dbConnection)
 	employeeRepo := repositories.NewEmployeeRepository(dbConnection)
+	supplierRepo := repositories.NewSupplierRepository(dbConnection)
 
 	userController := Controllers.NewUserHandler(&userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
@@ -36,6 +37,16 @@ func main() {
 	categoryController := Controllers.NewCategoryController(&cateogryRepo)
 	tenantController := Controllers.NewTenantController(&tenantRepo)
 	employeeController := Controllers.NewEmployeeController(&employeeRepo)
+	supplierController := Controllers.NewSuppliersController(&supplierRepo)
+
+	supplier := server.Group("/suppliers")
+	{
+		supplier.GET("/", supplierController.GetSuppliers)
+		supplier.GET("/:id", supplierController.Get)
+		supplier.POST("/", supplierController.Create)
+		supplier.PUT("/:id", supplierController.Update)
+		supplier.DELETE("/:id", supplierController.Delete)
+	}
 
 	clients := server.Group("/clients")
 	{

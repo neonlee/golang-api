@@ -1,0 +1,76 @@
+-- Categorias de Produtos
+INSERT INTO category  (nome, descricao, tipo, ordem) VALUES
+('Alimentos', 'Produtos alimentícios para pets', 'produto', 1),
+('Medicamentos', 'Medicamentos e produtos de saúde', 'produto', 2),
+('Higiene', 'Produtos de higiene e beleza', 'produto', 3),
+('Acessórios', 'Acessórios para pets', 'produto', 4),
+('Limpeza', 'Produtos de limpeza ambiental', 'produto', 5),
+('Equipamentos', 'Equipamentos profissionais', 'produto', 6);
+
+-- Categorias de Serviços
+INSERT INTO categorias (nome, descricao, tipo, ordem) VALUES
+('Serviços Veterinários', 'Serviços médicos veterinários', 'servico', 7),
+('Serviços de Estética', 'Serviços de banho e tosa', 'servico', 8),
+('Hospedagem', 'Serviços de hospedagem', 'servico', 9);
+
+-- Outras Categorias
+INSERT INTO categorias (nome, descricao, tipo, ordem) VALUES
+('Fornecedores', 'Categorias de fornecedores', 'fornecedor', 10),
+('Problemas de Saúde', 'Categorias de problemas de saúde', 'problema_saude', 11),
+('Vacinas', 'Tipos de vacinas', 'vacina', 12),
+('Exames', 'Tipos de exames', 'exame', 13),
+('Despesas', 'Categorias de despesas', 'despesa', 14);
+
+INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
+(1, 'Ração Cachorro Adulto', 'Rações para cães adultos', 1, '{"especie": "canina", "idade": "adulto"}'),
+(1, 'Ração Cachorro Filhote', 'Rações para filhotes de cães', 2, '{"especie": "canina", "idade": "filhote"}'),
+(1, 'Ração Gato Adulto', 'Rações para gatos adultos', 3, '{"especie": "felina", "idade": "adulto"}'),
+(1, 'Ração Gato Filhote', 'Rações para filhotes de gatos', 4, '{"especie": "felina", "idade": "filhote"}'),
+(1, 'Ração Especial', 'Rações especiais e premium', 5, '{"tipo": "especial"}'),
+(1, 'Petiscos e Ossos', 'Petiscos, ossos e biscoitos', 6, '{"tipo": "petisco"}'),
+(1, 'Alimento Úmido', 'Latas, sachês e patês', 7, '{"tipo": "umido"}');
+
+INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
+(2, 'Vermífugos', 'Vermífugos e antiparasitários internos', 1, '{"tipo": "parasitario"}'),
+(2, 'Antipulgas e Carrapatos', 'Produtos contra pulgas e carrapatos', 2, '{"tipo": "ectoparasitario"}'),
+(2, 'Vitaminas e Suplementos', 'Suplementos vitamínicos e nutricionais', 3, '{"tipo": "suplemento"}'),
+(2, 'Medicamentos Controlados', 'Medicamentos de uso controlado', 4, '{"controlado": true}'),
+(2, 'Primeiros Socorros', 'Produtos para primeiros socorros', 5, '{"tipo": "emergencia"}');
+
+INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
+(7, 'Consultas', 'Consultas e exames clínicos', 1, '{"duracao": 30, "requer_agendamento": true}'),
+(7, 'Vacinação', 'Aplicação de vacinas', 2, '{"duracao": 15, "requer_agendamento": false}'),
+(7, 'Cirurgias', 'Procedimentos cirúrgicos', 3, '{"complexo": true, "requer_internacao": true}'),
+(7, 'Exames Laboratoriais', 'Exames de sangue, urina, etc', 4, '{"laboratorio": true}'),
+(7, 'Internação', 'Internação e observação', 5, '{"pernoite": true}'),
+(7, 'Atendimento Emergencial', 'Plantão e urgências', 6, '{"urgente": true, "plantao": true}');
+
+INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
+(8, 'Banho Simples', 'Banho com shampoo adequado', 1, '{"duracao": 30, "agua": true}'),
+(8, 'Banho Completo', 'Banho + secagem + cuidados básicos', 2, '{"duracao": 45, "completo": true}'),
+(8, 'Tosa Higiênica', 'Aparação de pelos nas regiões íntimas', 3, '{"duracao": 40, "higienico": true}'),
+(8, 'Tosa na Máquina', 'Tosa completa com máquina', 4, '{"duracao": 60, "maquina": true}'),
+(8, 'Tosa na Tesoura', 'Tosa artesanal com tesoura', 5, '{"duracao": 90, "tesoura": true}'),
+(8, 'Day SPA', 'Banho ofurô, hidratação e massagem', 6, '{"duracao": 120, "spa": true}');
+
+INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
+(10, 'Alimentos', 'Fabricantes e distribuidores de ração', 1, '{"tipo": "alimento"}'),
+(10, 'Medicamentos', 'Laboratórios farmacêuticos veterinários', 2, '{"tipo": "medicamento"}'),
+(10, 'Acessórios', 'Fabricantes de acessórios para pets', 3, '{"tipo": "acessorio"}'),
+(10, 'Equipamentos', 'Equipamentos médicos e cirúrgicos', 4, '{"tipo": "equipamento"}'),
+(10, 'Material de Limpeza', 'Produtos de limpeza e higiene', 5, '{"tipo": "limpeza"}');
+
+INSERT INTO module_permission (nome, descricao, rota, icone, ordem, created_at, updated_at) VALUES
+('Usuários', 'Gerenciamento de usuários do sistema', '/usuarios', 'users', 1, NOW(), NOW()),
+('Produtos', 'Gerenciamento de produtos', '/produtos', 'package', 2, NOW(), NOW()),
+('Clientes', 'Gerenciamento de clientes', '/clientes', 'user-check', 3, NOW(), NOW()),
+('Vendas', 'Controle de vendas', '/vendas', 'shopping-cart', 4, NOW(), NOW()),
+('Relatórios', 'Relatórios do sistema', '/relatorios', 'bar-chart', 5, NOW(), NOW())
+ON CONFLICT (nome) DO NOTHING;
+
+-- Tipos de acesso
+INSERT INTO type_access (nome, descricao, created_at, updated_at) VALUES
+('Administrador', 'Acesso completo ao sistema', NOW(), NOW()),
+('Gerente', 'Acesso gerencial', NOW(), NOW()),
+('Operador', 'Acesso operacional limitado', NOW(), NOW())
+ON CONFLICT (nome) DO NOTHING;

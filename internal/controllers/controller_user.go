@@ -27,7 +27,7 @@ func NewUserHandler(repo *repositories.UserRepository) *ControllerUser {
 // @Success		200	{array}		models.Users
 // @Failure		500	{object}	map[string]string
 // @Router			/pets/id [get]
-func (h *ControllerUser) CreateUser(ctx *gin.Context) {
+func (h *ControllerUser) Create(ctx *gin.Context) {
 	var user models.Users
 	err := ctx.BindJSON(&user)
 
