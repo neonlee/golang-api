@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type CategoriaTipo string
@@ -19,7 +17,6 @@ const (
 )
 
 type Category struct {
-	gorm.Model
 	PetshopId int           `gorm:"column:petshop_id" json:"petshop_id"`
 	Id        int           `gorm:"column:id;primaryKey" json:"id"`
 	Order     int           `gorm:"column:ordem" json:"order"`

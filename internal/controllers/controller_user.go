@@ -9,35 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllerUser struct {
-	repo *repositories.UserRepository
+// UserController handles user-related HTTP requests.
+type UserController struct {
+	Repo repositories.UserRepository
 }
 
-func NewUserHandler(repo *repositories.UserRepository) *ControllerUser {
-	return &ControllerUser{repo: repo}
+func NewUserController(repo repositories.UserRepository) *UserController {
+	return &UserController{Repo: repo}
 }
 
-// GetPets godoc
-//
-// @Summary		Lista todos os pets
-// @Description	Retorna todos os pets cadastrados
-// @Tags			pets
-// @Accept			json
-// @Produce		json
-// @Success		200	{array}		models.Users
-// @Failure		500	{object}	map[string]string
-// @Router			/pets/id [get]
-func (h *ControllerUser) Create(ctx *gin.Context) {
-	var user models.Users
-	err := ctx.BindJSON(&user)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-		return
-	}
-
-	users, err := h.repo.Create(user)
-
+func (c *UserController) GetUsers(ctx *gin.Context) {
+	users, err := c.Repo.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -45,41 +27,66 @@ func (h *ControllerUser) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, users)
 }
 
-// GetPets godoc
-//
-//	@Summary		Lista todos os pets
-//	@Description	Retorna todos os pets cadastrados
-//	@Tags			pets
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Users
-//	@Failure		500	{object}	map[string]string
-//	@Router			/pets/id [get]
-func (h *ControllerUser) GetUser(ctx *gin.Context) {
-	id := ctx.Param("productId")
+func (c *UserController) GetUser(ctx *gin.Context) {
+	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
+	users, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
 
-	users, err := h.repo.GetByID(user)
-
+	user, err := c.Repo.FindByID(users)
 	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (c *UserController) CreateUser(ctx *gin.Context) {
+	var user models.Users
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := c.Repo.Create(&user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, users)
+	ctx.JSON(http.StatusCreated, user)
 }
 
-// func (h *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-// 	users, err := h.repo.GetAll()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+func (c *UserController) UpdateUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+		return
+	}
+	var product models.Users
+	if err := ctx.ShouldBindJSON(&product); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	updated, err := c.Repo.Update(product, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update product"})
+		return
+	}
+	ctx.JSON(http.StatusOK, updated)
+}
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(users)
-// }
+func (c *UserController) DeleteUser(ctx *gin.Context) {
+	var uri struct {
+		ID uint `uri:"id" binding:"required"`
+	}
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := c.Repo.Delete(uri.ID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.Status(http.StatusNoContent)
+}

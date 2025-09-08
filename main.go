@@ -25,19 +25,21 @@ func main() {
 	userRepo := repositories.NewUserRepository(dbConnection)
 	ClientsRepo := repositories.NewClientsRepository(dbConnection)
 	servicesRepo := repositories.NewServicesRepository(dbConnection)
-	cateogryRepo := repositories.NewCategoryRepository(dbConnection)
+	categoryRepo := repositories.NewCategoryRepository(dbConnection)
 	tenantRepo := repositories.NewTenantRepository(dbConnection)
 	employeeRepo := repositories.NewEmployeeRepository(dbConnection)
 	supplierRepo := repositories.NewSupplierRepository(dbConnection)
+	productRepo := repositories.NewProductRepository(dbConnection)
 
-	userController := Controllers.NewUserHandler(&userRepo)
+	userController := Controllers.NewUserController(userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
 	petsController := Controllers.NewPetsController(&petsRepo)
 	servicesController := Controllers.NewServicesController(&servicesRepo)
-	categoryController := Controllers.NewCategoryController(&cateogryRepo)
+	categoryController := Controllers.NewCategoryController(&categoryRepo)
 	tenantController := Controllers.NewTenantController(&tenantRepo)
-	employeeController := Controllers.NewEmployeeController(&employeeRepo)
+	employeeController := Controllers.NewEmployeeController(employeeRepo)
 	supplierController := Controllers.NewSuppliersController(&supplierRepo)
+	productController := Controllers.NewProductController(&productRepo)
 
 	supplier := server.Group("/suppliers")
 	{
@@ -59,7 +61,7 @@ func main() {
 	employee := server.Group("/employee")
 	{
 		employee.GET("/", employeeController.Get)
-		employee.GET("/:id", employeeController.GetEmployee)
+		employee.GET("/:id", employeeController.Get)
 		employee.POST("/", employeeController.Create)
 		employee.PUT("/:id", employeeController.Update)
 		employee.DELETE("/:id", employeeController.Delete)
@@ -100,11 +102,21 @@ func main() {
 		pets.DELETE("/:id", petsController.DeletePet)
 		pets.GET("/:id", petsController.GetPet)
 	}
-
-	user := server.Group("/users")
+	product := server.Group("/products")
 	{
+		product.GET("/", productController.GetAllProducts)
+		product.POST("/", productController.CreateProduct)
+		product.PUT("/:id", productController.UpdateProduct)
+		product.DELETE("/:id", productController.DeleteProduct)
+		product.GET("/:id", productController.GetProductByID)
+	}
+	user := server.Group("/user")
+	{
+		user.GET("/", userController.GetUsers)
 		user.POST("/", userController.CreateUser)
-		user.GET("/:userId", userController.GetUser)
+		user.PUT("/:id", userController.UpdateUser)
+		user.DELETE("/:id", userController.DeleteUser)
+		user.GET("/:id", userController.GetUser)
 	}
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

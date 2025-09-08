@@ -9,143 +9,156 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllersEmployee struct {
-	repository *repositories.EmployeeRepository
+type EmployeeController struct {
+	Repo repositories.EmployeeRepository
 }
 
-func NewEmployeeController(connection *repositories.EmployeeRepository) *ControllersEmployee {
-	return &ControllersEmployee{repository: connection}
+func NewEmployeeController(repository repositories.EmployeeRepository) *EmployeeController {
+	return &EmployeeController{Repo: repository}
 }
 
-// UpdateClient godoc
+// UpdateEmployee godoc
 //
-//	@Summary		atualiza o cliente
-//	@Description	atualiza o cliente
-//	@Tags			client
+//	@Summary		Atualiza um funcionário
+//	@Description	Atualiza os dados de um funcionário
+//	@Tags			employees
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Employee
-//	@Failure		500	{object}	map[string]string
-//	@Router			/clients [get]
-func (p *ControllersEmployee) Update(ctx *gin.Context) {
+//	@Param			id		path		int				true	"ID do Funcionário"
+//	@Param			employee	body		models.Employee	true	"Dados do Funcionário"
+//	@Success		200		{object}	models.Employee
+//	@Failure		400		{object}	map[string]string
+//	@Failure		500		{object}	map[string]string
+//	@Router			/employees/{id} [put]
+func (p *EmployeeController) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
+	employeeID, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	var cliente models.Employee
-	if err := ctx.BindJSON(&cliente); err != nil {
+
+	var employee models.Employee
+	if err := ctx.BindJSON(&employee); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	client, err := p.repository.UpdateEmployee(user, cliente)
 
+	updatedEmployee, err := p.Repo.UpdateEmployee(employeeID, employee)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, updatedEmployee)
 }
 
-// Getclient godoc
+// GetEmployee godoc
 //
-//	@Summary		Lista um cliente
-//	@Description	Retorna um cliente
-//	@Tags			client
+//	@Summary		Obtém um funcionário
+//	@Description	Retorna um funcionário específico pelo ID
+//	@Tags			employees
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Employee
-//	@Failure		500	{object}	map[string]string
-//	@Router			/client/:id [get]
-func (p *ControllersEmployee) Get(ctx *gin.Context) {
+//	@Param			id	path		int	true	"ID do Funcionário"
+//	@Success		200	{object}	models.Employee
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/employees/{id} [get]
+func (p *EmployeeController) Get(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
+	employeeID, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.GetEmployee(user)
 
+	employee, err := p.Repo.GetEmployee(employeeID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, employee)
 }
 
-// GetClients godoc
+// GetEmployees godoc
 //
-//	@Summary		Lista todos os clientes
-//	@Description	Retorna todos os clientes cadastrados
-//	@Tags			client
+//	@Summary		Lista todos os funcionários
+//	@Description	Retorna todos os funcionários cadastrados
+//	@Tags			employees
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
-//	@Router			/clients [get]
-func (p *ControllersEmployee) GetEmployee(ctx *gin.Context) {
-	result, err := p.repository.GetEmployees()
-
+//	@Router			/employees [get]
+func (p *EmployeeController) GetEmployees(ctx *gin.Context) {
+	employees, err := p.Repo.GetEmployees()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, employees)
 }
 
-// PostPet godoc
+// CreateEmployee godoc
 //
-//	@Summary		Cria um cliente
-//	@Description	Cria um cliente
-//	@Tags			clients
+//	@Summary		Cria um funcionário
+//	@Description	Cria um novo funcionário
+//	@Tags			employees
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		models.Employee
-//	@Failure		500	{object}	map[string]string
-//	@Router			/client [get]
-func (p *ControllersEmployee) Create(ctx *gin.Context) {
-	var client models.Employee
-	err := ctx.BindJSON(&client)
+//	@Param			employee	body		models.Employee	true	"Dados do Funcionário"
+//	@Success		201		{object}	models.Employee
+//	@Failure		400		{object}	map[string]string
+//	@Failure		500		{object}	map[string]string
+//	@Router			/employees [post]
+func (p *EmployeeController) Create(ctx *gin.Context) {
+	var employee models.Employee
+	err := ctx.BindJSON(&employee)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := p.repository.Create(client)
-
+	result, err := p.Repo.Create(employee)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusCreated, result)
 }
 
-// DeleteClient godoc
+// DeleteEmployee godoc
 //
-//	@Summary		Deleta um cliente
-//	@Description	deleta um cliente
-//	@Tags			client
+//	@Summary		Deleta um funcionário
+//	@Description	Remove um funcionário do sistema
+//	@Tags			employees
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{array}		bool
+//	@Param			id	path		int	true	"ID do Funcionário"
+//	@Success		200	{object}	map[string]bool
+//	@Failure		400	{object}	map[string]string
 //	@Failure		500	{object}	map[string]string
-//	@Router			/client [get]
-func (p *ControllersEmployee) Delete(ctx *gin.Context) {
+//	@Router			/employees/{id} [delete]
+func (p *EmployeeController) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
+	employeeID, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.DeleteEmployee(user)
 
+	success, err := p.Repo.DeleteEmployee(employeeID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, gin.H{"deleted": success})
 }

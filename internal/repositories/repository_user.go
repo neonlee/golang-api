@@ -1,46 +1,84 @@
 package repositories
 
 import (
+	"errors"
 	"petApi/internal/models"
 
 	"gorm.io/gorm"
 )
 
-type UserRepository struct {
-	connection *gorm.DB
+// UserRepository defines the interface for user repository methods.
+type UserRepository interface {
+	Create(user *models.Users) error
+	FindByID(id int) (*models.Users, error)
+	GetAll() (*[]models.Users, error)
+	FindByEmail(email string) (*models.Users, error)
+	Update(user models.Users, id int) (*models.Users, error)
+	Delete(id uint) error
 }
 
-func NewUserRepository(connection *gorm.DB) UserRepository {
-	return UserRepository{connection: connection}
+// userRepository implements UserRepository using GORM.
+type userRepository struct {
+	db *gorm.DB
 }
 
-// func (repository *UserRepository) Update(user *models.User) (models.User, error) {
-// 	query := "SELECT id, product_name, price FROM product"
-// 	rows, err := repository.connection.Query(query)
-// 	if err != nil {
-// 		return models.User{}, err
-// 	}
-
-// 	var productList []models.User
-// 	var productObj models.User
-// }
-
-// func (r *UserRepository) Delete(id int) error {
-// 	query := `DELETE FROM users WHERE id = $1`
-// 	_, err := r.db.Exec(query, id)
-// 	return err
-// }
-
-// Adicione role nas consultas SQL
-func (r *UserRepository) Create(user models.Users) (*models.Users, error) {
-	users := &models.Users{}
-
-	return users, nil
+// NewUserRepository creates a new UserRepository.
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db: db}
 }
 
-func (repository *UserRepository) GetByID(id int) (*models.Users, error) {
-	user := &models.Users{}
+func (r *userRepository) Create(user *models.Users) error {
+	return r.db.Create(user).Error
+}
 
-	return user, nil
+// GetAll implements UserRepository.
+func (r *userRepository) GetAll() (*[]models.Users, error) {
+	var clientes []models.Users
 
+	err := r.db.
+		Find(&clientes).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &clientes, nil
+}
+func (r *userRepository) FindByID(id int) (*models.Users, error) {
+	var user models.Users
+	if err := r.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) FindByEmail(email string) (*models.Users, error) {
+	var user models.Users
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) Update(user models.Users, id int) (*models.Users, error) {
+	err := r.db.Model(&models.Supplier{}).Where("id = ?", id).Updates(user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Busca o cliente atualizado
+	var model models.Users
+	err = r.db.First(&model, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &model, nil
+}
+
+func (r *userRepository) Delete(id uint) error {
+	result := r.db.Delete(&models.Users{}, id)
+	if result.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
+	return result.Error
 }

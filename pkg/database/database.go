@@ -10,6 +10,7 @@ import (
 func ConnectDB() *gorm.DB {
 	dsn := "host=localhost user=postgres password=123 dbname=petshop port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},

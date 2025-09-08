@@ -28,7 +28,6 @@ func (r *SupplierRepository) GetSuppliers() (*[]models.Supplier, error) {
 	var clientes []models.Supplier
 
 	err := r.connection.
-		Preload("Products").
 		Find(&clientes).Error
 	if err != nil {
 		return nil, err
@@ -40,7 +39,6 @@ func (r *SupplierRepository) GetSuppliers() (*[]models.Supplier, error) {
 func (r *SupplierRepository) GetSupplier(id int) (*models.Supplier, error) {
 	var client models.Supplier
 	err := r.connection.
-		Preload("Products").
 		First(&client, id).Error
 
 	if err != nil {

@@ -1,34 +1,48 @@
 package repositories
 
 import (
+	"fmt"
 	"petApi/internal/models"
 
 	"gorm.io/gorm"
 )
 
-type EmployeeRepository struct {
-	connection *gorm.DB
+type EmployeeRepository interface {
+	Create(user models.Employee) (*models.Employee, error)
+	GetEmployees() (*[]models.Employee, error)
+	GetEmployee(id int) (*models.Employee, error)
+	UpdateEmployee(id int, cliente models.Employee) (*models.Employee, error)
+	DeleteEmployee(id int) (bool, error)
+}
+
+type employeeRepository struct {
+	db *gorm.DB
 }
 
 func NewEmployeeRepository(connection *gorm.DB) EmployeeRepository {
-	return EmployeeRepository{connection: connection}
+	return &employeeRepository{db: connection}
 }
 
-func (r *EmployeeRepository) Create(user models.Employee) (*models.Employee, error) {
-	err := r.connection.Create(&user).Error
+func (r *employeeRepository) Create(employee models.Employee) (*models.Employee, error) {
+	var user models.Users
+	if err := r.db.First(&user, employee.UserID).Error; err != nil {
+		return nil, fmt.Errorf("categoria com ID %d não existe", employee.UserID)
+	}
+
+	err := r.db.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// query.Close()
-	return &user, nil
+	return &employee, nil
 }
 
-func (r *EmployeeRepository) GetEmployees() (*[]models.Employee, error) {
+func (r *employeeRepository) GetEmployees() (*[]models.Employee, error) {
 	var clientes []models.Employee
 
-	err := r.connection.
-		Preload("Pets").
+	err := r.db.
+		Preload("User").
 		Find(&clientes).Error
 	if err != nil {
 		return nil, err
@@ -37,12 +51,11 @@ func (r *EmployeeRepository) GetEmployees() (*[]models.Employee, error) {
 	return &clientes, nil
 }
 
-func (r *EmployeeRepository) GetEmployee(id int) (*models.Employee, error) {
+func (r *employeeRepository) GetEmployee(id int) (*models.Employee, error) {
 	var client models.Employee
-	var user models.Users
-	err := r.connection.Preload("TipoAcesso.Modulos").
+	err := r.db.Preload("User").
 		Where("id = ?", id).
-		First(&user).Error
+		First(&client).Error
 
 	if err != nil {
 		return nil, err
@@ -51,16 +64,16 @@ func (r *EmployeeRepository) GetEmployee(id int) (*models.Employee, error) {
 	return &client, nil
 }
 
-func (r *EmployeeRepository) UpdateEmployee(id int, cliente models.Employee) (*models.Employee, error) {
+func (r *employeeRepository) UpdateEmployee(id int, cliente models.Employee) (*models.Employee, error) {
 	// Aplica o update direto pelo ID
-	err := r.connection.Model(&models.Employee{}).Where("id = ?", id).Updates(cliente).Error
+	err := r.db.Model(&models.Employee{}).Where("id = ?", id).Updates(cliente).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// Busca o cliente atualizado
 	var updatedEmployee models.Employee
-	err = r.connection.First(&updatedEmployee, id).Error
+	err = r.db.First(&updatedEmployee, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +81,8 @@ func (r *EmployeeRepository) UpdateEmployee(id int, cliente models.Employee) (*m
 	return &updatedEmployee, nil
 }
 
-func (r *EmployeeRepository) DeleteEmployee(id int) (bool, error) {
-	err := r.connection.Delete(&models.Employee{}, id).Error
+func (r *employeeRepository) DeleteEmployee(id int) (bool, error) {
+	err := r.db.Delete(&models.Employee{}, id).Error
 	if err != nil {
 		return false, err
 	}
