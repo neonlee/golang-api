@@ -24,7 +24,7 @@ func NewEmployeeRepository(connection *gorm.DB) EmployeeRepository {
 }
 
 func (r *employeeRepository) Create(employee models.Employee) (*models.Employee, error) {
-	var user models.Users
+	var user models.Usuario
 	if err := r.db.First(&user, employee.UserID).Error; err != nil {
 		return nil, fmt.Errorf("categoria com ID %d não existe", employee.UserID)
 	}

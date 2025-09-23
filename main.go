@@ -22,21 +22,17 @@ func main() {
 	m.RunMigrations()
 
 	petsRepo := repositories.NewPetsRepository(dbConnection)
-	userRepo := repositories.NewUserRepository(dbConnection)
 	ClientsRepo := repositories.NewClientsRepository(dbConnection)
 	servicesRepo := repositories.NewServicesRepository(dbConnection)
 	categoryRepo := repositories.NewCategoryRepository(dbConnection)
-	tenantRepo := repositories.NewTenantRepository(dbConnection)
 	employeeRepo := repositories.NewEmployeeRepository(dbConnection)
 	supplierRepo := repositories.NewSupplierRepository(dbConnection)
 	productRepo := repositories.NewProductRepository(dbConnection)
 
-	userController := Controllers.NewUserController(userRepo)
 	clientsController := Controllers.NewClientsController(&ClientsRepo)
 	petsController := Controllers.NewPetsController(&petsRepo)
 	servicesController := Controllers.NewServicesController(&servicesRepo)
 	categoryController := Controllers.NewCategoryController(&categoryRepo)
-	tenantController := Controllers.NewTenantController(&tenantRepo)
 	employeeController := Controllers.NewEmployeeController(employeeRepo)
 	supplierController := Controllers.NewSuppliersController(&supplierRepo)
 	productController := Controllers.NewProductController(&productRepo)
@@ -65,15 +61,6 @@ func main() {
 		employee.POST("/", employeeController.Create)
 		employee.PUT("/:id", employeeController.Update)
 		employee.DELETE("/:id", employeeController.Delete)
-	}
-
-	tentant := server.Group("/tenant")
-	{
-		tentant.GET("/", tenantController.GetTenants)
-		tentant.GET("/:id", tenantController.Get)
-		tentant.POST("/", tenantController.Create)
-		tentant.PUT("/:id", tenantController.Update)
-		tentant.DELETE("/:id", tenantController.Delete)
 	}
 
 	category := server.Group("/category")
@@ -109,14 +96,6 @@ func main() {
 		product.PUT("/:id", productController.UpdateProduct)
 		product.DELETE("/:id", productController.DeleteProduct)
 		product.GET("/:id", productController.GetProductByID)
-	}
-	user := server.Group("/user")
-	{
-		user.GET("/", userController.GetUsers)
-		user.POST("/", userController.CreateUser)
-		user.PUT("/:id", userController.UpdateUser)
-		user.DELETE("/:id", userController.DeleteUser)
-		user.GET("/:id", userController.GetUser)
 	}
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

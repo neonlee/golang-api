@@ -1,25 +1,81 @@
+// models/entities/produto.go
 package models
 
 import (
-	"time"
+	"gorm.io/gorm"
 )
 
-type Product struct {
-	Id                int       `gorm:"primaryKey;autoIncrement" validate:"required,min=2,max=100" json:"id"`
-	PetshopID         int       `gorm:"column:petshop_id;not null;index" validate:"required" json:"petshop_id"`
-	Sku               string    `gorm:"column:sku;type:varchar(100);uniqueIndex;not null" validate:"required,min=14,max=20" json:"sku"`
-	Nome              string    `gorm:"column:nome;type:varchar(255);not null" validate:"required,min=2,max=100" json:"name"`
-	Photo             string    `gorm:"column:foto;type:text" json:"photo"`
-	Descricao         string    `gorm:"column:descricao;type:text" json:"description"`
-	PrecoCusto        float64   `gorm:"column:preco_custo;type:decimal(10,2);not null check:price_custo > 0" validate:"required" json:"price_custo"`
-	PrecoVenda        float64   `gorm:"column:preco_venda;type:decimal(10,2);not null check:price_venda > 0" validate:"required" json:"price_venda"`
-	SupplierID        int       `gorm:"column:supplier_id;not null;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" validate:"required" json:"supplier_id"`
-	Supplier          Supplier  `gorm:"foreignKey:id;references:SupplierID" json:"supplier,omitempty"`
-	CategoryID        int       `gorm:"column:category_id;not null;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" validate:"required" json:"category_id"`
-	Category          Category  `gorm:"foreignKey:Id;references:CategoryID" json:"category,omitempty"`
-	QuantidadeEstoque int       `gorm:"column:quantidade_estoque;not null;default:0" validate:"required" json:"quantidade_estoque"`
-	QuantidadeMinima  int       `gorm:"column:quantidade_minima;not null;default:1" validate:"required" json:"quantidade_minima"`
-	DataValidade      string    `gorm:"column:data_validade;type:date" validate:"required" json:"data_validade"`
-	CreatedAt         time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt         time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+type CategoriaProduto struct {
+	gorm.Model
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	EmpresaID uint   `gorm:"not null;index" json:"empresa_id"`
+	Nome      string `gorm:"size:50;not null" json:"nome"`
+	Descricao string `gorm:"type:text" json:"descricao"`
+	Ativo     bool   `gorm:"default:true" json:"ativo"`
+
+	// Relacionamentos
+	Empresa  Empresa   `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Produtos []Produto `gorm:"foreignKey:CategoriaID" json:"produtos,omitempty"`
+}
+
+type Fornecedor struct {
+	gorm.Model
+	ID           uint   `gorm:"primaryKey" json:"id"`
+	EmpresaID    uint   `gorm:"not null;index" json:"empresa_id"`
+	NomeFantasia string `gorm:"size:100;not null" json:"nome_fantasia"`
+	RazaoSocial  string `gorm:"size:100" json:"razao_social"`
+	CNPJ         string `gorm:"size:18" json:"cnpj"`
+	Telefone     string `gorm:"size:15" json:"telefone"`
+	Email        string `gorm:"size:100" json:"email"`
+	Endereco     JSON   `gorm:"type:jsonb" json:"endereco"`
+	Ativo        bool   `gorm:"default:true" json:"ativo"`
+
+	// Relacionamentos
+	Empresa  Empresa   `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Produtos []Produto `gorm:"foreignKey:FornecedorID" json:"produtos,omitempty"`
+	Compras  []Compra  `gorm:"foreignKey:FornecedorID" json:"compras,omitempty"`
+}
+
+type Produto struct {
+	gorm.Model
+	ID               uint    `gorm:"primaryKey" json:"id"`
+	EmpresaID        uint    `gorm:"not null;index" json:"empresa_id"`
+	CategoriaID      uint    `gorm:"not null;index" json:"categoria_id"`
+	FornecedorID     uint    `gorm:"index" json:"fornecedor_id"`
+	CodigoBarras     string  `gorm:"size:50" json:"codigo_barras"`
+	Nome             string  `gorm:"size:100;not null" json:"nome"`
+	Descricao        string  `gorm:"type:text" json:"descricao"`
+	Tipo             string  `gorm:"size:20" json:"tipo"`
+	EspecieDestinada string  `gorm:"size:20" json:"especie_destinada"`
+	PesoKg           float64 `gorm:"type:decimal(8,3)" json:"peso_kg"`
+	UnidadeMedida    string  `gorm:"size:10" json:"unidade_medida"`
+	PrecoCusto       float64 `gorm:"type:decimal(10,2)" json:"preco_custo"`
+	PrecoVenda       float64 `gorm:"type:decimal(10,2)" json:"preco_venda"`
+	EstoqueMinimo    int     `gorm:"default:0" json:"estoque_minimo"`
+	EstoqueAtual     int     `gorm:"default:0" json:"estoque_atual"`
+	Ativo            bool    `gorm:"default:true" json:"ativo"`
+
+	// Relacionamentos
+	Empresa       Empresa               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Categoria     CategoriaProduto      `gorm:"foreignKey:CategoriaID" json:"categoria,omitempty"`
+	Fornecedor    Fornecedor            `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
+	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:ProdutoID" json:"movimentacoes,omitempty"`
+	VendaItens    []VendaItem           `gorm:"foreignKey:ProdutoID" json:"venda_itens,omitempty"`
+	CompraItens   []CompraItem          `gorm:"foreignKey:ProdutoID" json:"compra_itens,omitempty"`
+}
+
+type MovimentacaoEstoque struct {
+	gorm.Model
+	ID                 uint   `gorm:"primaryKey" json:"id"`
+	ProdutoID          uint   `gorm:"not null;index" json:"produto_id"`
+	TipoMovimentacao   string `gorm:"size:20;not null" json:"tipo_movimentacao"`
+	Quantidade         int    `gorm:"not null" json:"quantidade"`
+	QuantidadeAnterior int    `json:"quantidade_anterior"`
+	QuantidadeAtual    int    `json:"quantidade_atual"`
+	Motivo             string `gorm:"size:100" json:"motivo"`
+	UsuarioID          uint   `gorm:"not null;index" json:"usuario_id"`
+
+	// Relacionamentos
+	Produto Produto `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
+	Usuario Usuario `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

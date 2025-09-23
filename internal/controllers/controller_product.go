@@ -42,7 +42,7 @@ func (pc *ProductController) GetProductByID(c *gin.Context) {
 }
 
 func (pc *ProductController) CreateProduct(c *gin.Context) {
-	var product models.Product
+	var product models.Produto
 	if err := c.ShouldBindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid input: %s", err.Error())})
 		return
@@ -61,7 +61,7 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
 		return
 	}
-	var product models.Product
+	var product models.Produto
 	if err := c.ShouldBindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return

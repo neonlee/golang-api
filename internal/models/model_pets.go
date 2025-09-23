@@ -2,20 +2,26 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Pet struct {
-	ID          int       `gorm:"column:id;primaryKey" json:"id"`
-	ClientID    int       `gorm:"column:client_id;index;not null" json:"client_id"`
-	Name        string    `gorm:"column:nome" json:"name"`
-	Race        string    `gorm:"column:raca" json:"race"`
-	Specie      string    `gorm:"column:especie" json:"specie"`
-	Color       string    `gorm:"column:cor" json:"color"`
-	Size        string    `gorm:"column:porte" json:"size"`
-	Weight      float64   `gorm:"column:peso" json:"weight"`
-	Age         int       `gorm:"column:idade" json:"age"`
-	Observation string    `gorm:"column:observacao" json:"observation"`
-	Sex         string    `gorm:"column:sexo" json:"sex"`
-	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt   time.Time `gorm:"column:updated_at" json:"updated_at"`
+	gorm.Model
+	ID             uint       `gorm:"primaryKey" json:"id"`
+	ClienteID      uint       `gorm:"not null;index" json:"cliente_id"`
+	Nome           string     `gorm:"size:50;not null" json:"nome"`
+	Especie        string     `gorm:"size:20" json:"especie"`
+	Raca           string     `gorm:"size:50" json:"raca"`
+	Sexo           string     `gorm:"size:1" json:"sexo"`
+	DataNascimento *time.Time `gorm:"type:date" json:"data_nascimento"`
+	Peso           float64    `gorm:"type:decimal(5,2)" json:"peso"`
+	Cor            string     `gorm:"size:30" json:"cor"`
+	Observacoes    string     `gorm:"type:text" json:"observacoes"`
+	FotoURL        string     `gorm:"size:255" json:"foto_url"`
+
+	// Relacionamentos
+	Cliente      Cliente       `gorm:"foreignKey:ClienteID" json:"cliente,omitempty"`
+	Agendamentos []Agendamento `gorm:"foreignKey:PetID" json:"agendamentos,omitempty"`
+	Prontuarios  []Prontuario  `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
 }

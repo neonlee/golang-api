@@ -1,18 +1,27 @@
+// models/entities/cliente.go
 package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
-type Client struct { // Mudando para singular (boa prática)
-	PetshopID    int       `gorm:"column:petshop_id" json:"petshop_id"`
-	ID           int       `gorm:"column:id;primaryKey" json:"id"`
-	Name         string    `gorm:"column:nome" json:"name"`
-	Observations string    `gorm:"column:observacoes" json:"observations"`
-	Phone        string    `gorm:"column:telefone" json:"phone"`
-	Email        string    `gorm:"column:email" json:"email"`
-	Address      string    `gorm:"column:endereco" json:"address"`
-	CreatedAt    time.Time `gorm:"column:created_at" json:"created_at"` // Corrigido create_at para created_at
-	UpdatedAt    time.Time `gorm:"column:updated_at" json:"updated_at"`
-	Pets         []Pet     `gorm:"foreignKey:ClientID;references:id" json:"pets,omitempty"`
+type Cliente struct {
+	gorm.Model
+	ID             uint       `gorm:"primaryKey" json:"id"`
+	EmpresaID      uint       `gorm:"not null;index" json:"empresa_id"`
+	Nome           string     `gorm:"size:100;not null" json:"nome"`
+	CPFCNPJ        string     `gorm:"size:18" json:"cpf_cnpj"`
+	Telefone       string     `gorm:"size:15" json:"telefone"`
+	Email          string     `gorm:"size:100" json:"email"`
+	Endereco       JSON       `gorm:"type:jsonb" json:"endereco"`
+	DataNascimento *time.Time `gorm:"type:date" json:"data_nascimento"`
+	Observacoes    string     `gorm:"type:text" json:"observacoes"`
+	Ativo          bool       `gorm:"default:true" json:"ativo"`
+
+	// Relacionamentos
+	Empresa Empresa `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Pets    []Pet   `gorm:"foreignKey:ClienteID" json:"pets,omitempty"`
+	Vendas  []Venda `gorm:"foreignKey:ClienteID" json:"vendas,omitempty"`
 }

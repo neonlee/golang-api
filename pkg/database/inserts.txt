@@ -1,76 +1,220 @@
--- Categorias de Produtos
-INSERT INTO category  (nome, descricao, tipo, ordem) VALUES
-('Alimentos', 'Produtos alimentícios para pets', 'produto', 1),
-('Medicamentos', 'Medicamentos e produtos de saúde', 'produto', 2),
-('Higiene', 'Produtos de higiene e beleza', 'produto', 3),
-('Acessórios', 'Acessórios para pets', 'produto', 4),
-('Limpeza', 'Produtos de limpeza ambiental', 'produto', 5),
-('Equipamentos', 'Equipamentos profissionais', 'produto', 6);
+-- Inserir Planos
+INSERT INTO planos (nome, descricao, valor_mensal, modulos_disponiveis, limite_usuarios, limite_empresas) VALUES
+('Basic', 'Plano básico para petshop', 99.90, '["clientes", "pets", "vendas", "estoque", "agendamentos"]', 3, 1),
+('Premium', 'Plano completo para petshop e veterinário', 199.90, '["clientes", "pets", "vendas", "estoque", "agendamentos", "prontuarios", "vacinas"]', 10, 1),
+('Master', 'Plano master com todos os módulos', 299.90, '["clientes", "pets", "vendas", "estoque", "agendamentos", "prontuarios", "vacinas", "hotel", "nfe", "financeiro"]', 50, 5);
 
--- Categorias de Serviços
-INSERT INTO categorias (nome, descricao, tipo, ordem) VALUES
-('Serviços Veterinários', 'Serviços médicos veterinários', 'servico', 7),
-('Serviços de Estética', 'Serviços de banho e tosa', 'servico', 8),
-('Hospedagem', 'Serviços de hospedagem', 'servico', 9);
+-- Inserir Módulos
+INSERT INTO modulos (nome, descricao, categoria, icone, ordem) VALUES
+('clientes', 'Cadastro de Clientes', 'comum', 'users', 1),
+('pets', 'Cadastro de Pets', 'comum', 'pet', 2),
+('vendas', 'Vendas de Produtos', 'comum', 'shopping-cart', 3),
+('estoque', 'Controle de Estoque', 'comum', 'package', 4),
+('agendamentos', 'Agendamento de Serviços', 'petshop', 'calendar', 5),
+('prontuarios', 'Prontuários Veterinários', 'veterinario', 'file-medical', 6),
+('vacinas', 'Controle de Vacinas', 'veterinario', 'syringe', 7),
+('hotel', 'Hotel e Creche', 'hotel', 'home', 8),
+('nfe', 'Emissão de NF-e', 'comum', 'file-invoice', 9),
+('financeiro', 'Controle Financeiro', 'comum', 'dollar-sign', 10);
 
--- Outras Categorias
-INSERT INTO categorias (nome, descricao, tipo, ordem) VALUES
-('Fornecedores', 'Categorias de fornecedores', 'fornecedor', 10),
-('Problemas de Saúde', 'Categorias de problemas de saúde', 'problema_saude', 11),
-('Vacinas', 'Tipos de vacinas', 'vacina', 12),
-('Exames', 'Tipos de exames', 'exame', 13),
-('Despesas', 'Categorias de despesas', 'despesa', 14);
+-- Inserir Empresas
+INSERT INTO empresas (nome_fantasia, razao_social, cnpj, telefone, email, endereco, plano_id, data_assinatura) VALUES
+('PetShop do João', 'João Silva PetShop LTDA', '12.345.678/0001-90', '(11) 9999-8888', 'contato@petshopjoao.com.br', 
+ '{"logradouro": "Rua das Flores", "numero": "123", "bairro": "Centro", "cidade": "São Paulo", "uf": "SP", "cep": "01234-567"}', 2, '2024-01-15'),
+('Clínica Vet Amigo', 'Clínica Veterinária Amigo Fiel LTDA', '98.765.432/0001-10', '(11) 7777-6666', 'contato@vetamigo.com.br', 
+ '{"logradouro": "Av. Principal", "numero": "456", "bairro": "Jardins", "cidade": "São Paulo", "uf": "SP", "cep": "04567-890"}', 3, '2024-01-10');
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ -- Inserir Usuários
+INSERT INTO usuarios (empresa_id, nome, email, senha_hash, telefone, cargo) VALUES
+(1, 'João Silva', 'joao@petshopjoao.com.br', '$2a$10$HxZyWzYQYzQyYzQyYzQyYu', '(11) 9999-8888', 'Gerente'),
+(1, 'Maria Santos', 'maria@petshopjoao.com.br', '$2a$10$HxZyWzYQYzQyYzQyYzQyYu', '(11) 8888-7777', 'Vendedora'),
+(1, 'Carlos Oliveira', 'carlos@petshopjoao.com.br', '$2a$10$HxZyWzYQYzQyYzQyYzQyYu', '(11) 7777-6666', 'Veterinário'),
+(2, 'Dra. Ana Costa', 'ana@vetamigo.com.br', '$2a$10$HxZyWzYQYzQyYzQyYzQyYu', '(11) 6666-5555', 'Veterinária'),
+(2, 'Paulo Mendes', 'paulo@vetamigo.com.br', '$2a$10$HxZyWzYQYzQyYzQyYzQyYu', '(11) 5555-4444', 'Recepcionista');
 
-INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
-(1, 'Ração Cachorro Adulto', 'Rações para cães adultos', 1, '{"especie": "canina", "idade": "adulto"}'),
-(1, 'Ração Cachorro Filhote', 'Rações para filhotes de cães', 2, '{"especie": "canina", "idade": "filhote"}'),
-(1, 'Ração Gato Adulto', 'Rações para gatos adultos', 3, '{"especie": "felina", "idade": "adulto"}'),
-(1, 'Ração Gato Filhote', 'Rações para filhotes de gatos', 4, '{"especie": "felina", "idade": "filhote"}'),
-(1, 'Ração Especial', 'Rações especiais e premium', 5, '{"tipo": "especial"}'),
-(1, 'Petiscos e Ossos', 'Petiscos, ossos e biscoitos', 6, '{"tipo": "petisco"}'),
-(1, 'Alimento Úmido', 'Latas, sachês e patês', 7, '{"tipo": "umido"}');
+-- Inserir Perfis
+INSERT INTO perfis (empresa_id, nome, descricao, is_admin) VALUES
+(1, 'Administrador', 'Acesso total ao sistema', true),
+(1, 'Veterinário', 'Acesso a módulos veterinários', false),
+(1, 'Vendedor', 'Acesso a vendas e clientes', false),
+(2, 'Administrador', 'Acesso total ao sistema', true),
+(2, 'Atendente', 'Acesso a agendamentos e clientes', false);
 
-INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
-(2, 'Vermífugos', 'Vermífugos e antiparasitários internos', 1, '{"tipo": "parasitario"}'),
-(2, 'Antipulgas e Carrapatos', 'Produtos contra pulgas e carrapatos', 2, '{"tipo": "ectoparasitario"}'),
-(2, 'Vitaminas e Suplementos', 'Suplementos vitamínicos e nutricionais', 3, '{"tipo": "suplemento"}'),
-(2, 'Medicamentos Controlados', 'Medicamentos de uso controlado', 4, '{"controlado": true}'),
-(2, 'Primeiros Socorros', 'Produtos para primeiros socorros', 5, '{"tipo": "emergencia"}');
+-- Inserir Permissões para Perfil Veterinário
+INSERT INTO permissoes (perfil_id, modulo_id, pode_visualizar, pode_editar, pode_excluir, pode_gerar_relatorio) VALUES
+(2, 1, true, true, false, false),  -- clientes
+(2, 2, true, true, false, false),  -- pets
+(2, 6, true, true, true, true),    -- prontuarios
+(2, 7, true, true, true, false);   -- vacinas
 
-INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
-(7, 'Consultas', 'Consultas e exames clínicos', 1, '{"duracao": 30, "requer_agendamento": true}'),
-(7, 'Vacinação', 'Aplicação de vacinas', 2, '{"duracao": 15, "requer_agendamento": false}'),
-(7, 'Cirurgias', 'Procedimentos cirúrgicos', 3, '{"complexo": true, "requer_internacao": true}'),
-(7, 'Exames Laboratoriais', 'Exames de sangue, urina, etc', 4, '{"laboratorio": true}'),
-(7, 'Internação', 'Internação e observação', 5, '{"pernoite": true}'),
-(7, 'Atendimento Emergencial', 'Plantão e urgências', 6, '{"urgente": true, "plantao": true}');
+-- Inserir Permissões para Perfil Vendedor
+INSERT INTO permissoes (perfil_id, modulo_id, pode_visualizar, pode_editar, pode_excluir, pode_gerar_relatorio) VALUES
+(3, 1, true, true, false, false),  -- clientes
+(3, 2, true, true, false, false),  -- pets
+(3, 3, true, true, false, false),  -- vendas
+(3, 4, true, false, false, false); -- estoque
 
-INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
-(8, 'Banho Simples', 'Banho com shampoo adequado', 1, '{"duracao": 30, "agua": true}'),
-(8, 'Banho Completo', 'Banho + secagem + cuidados básicos', 2, '{"duracao": 45, "completo": true}'),
-(8, 'Tosa Higiênica', 'Aparação de pelos nas regiões íntimas', 3, '{"duracao": 40, "higienico": true}'),
-(8, 'Tosa na Máquina', 'Tosa completa com máquina', 4, '{"duracao": 60, "maquina": true}'),
-(8, 'Tosa na Tesoura', 'Tosa artesanal com tesoura', 5, '{"duracao": 90, "tesoura": true}'),
-(8, 'Day SPA', 'Banho ofurô, hidratação e massagem', 6, '{"duracao": 120, "spa": true}');
+-- Associar Usuários a Perfis
+INSERT INTO usuario_perfis (usuario_id, perfil_id) VALUES
+(1, 1), -- João é Admin
+(2, 3), -- Maria é Vendedora
+(3, 2), -- Carlos é Veterinário
+(4, 4), -- Dra. Ana é Admin
+(5, 5); -- Paulo é Atendente
 
-INSERT INTO subcategorias (categoria_id, nome, descricao, ordem, metadata) VALUES
-(10, 'Alimentos', 'Fabricantes e distribuidores de ração', 1, '{"tipo": "alimento"}'),
-(10, 'Medicamentos', 'Laboratórios farmacêuticos veterinários', 2, '{"tipo": "medicamento"}'),
-(10, 'Acessórios', 'Fabricantes de acessórios para pets', 3, '{"tipo": "acessorio"}'),
-(10, 'Equipamentos', 'Equipamentos médicos e cirúrgicos', 4, '{"tipo": "equipamento"}'),
-(10, 'Material de Limpeza', 'Produtos de limpeza e higiene', 5, '{"tipo": "limpeza"}');
 
-INSERT INTO module_permission (nome, descricao, rota, icone, ordem, created_at, updated_at) VALUES
-('Usuários', 'Gerenciamento de usuários do sistema', '/usuarios', 'users', 1, NOW(), NOW()),
-('Produtos', 'Gerenciamento de produtos', '/produtos', 'package', 2, NOW(), NOW()),
-('Clientes', 'Gerenciamento de clientes', '/clientes', 'user-check', 3, NOW(), NOW()),
-('Vendas', 'Controle de vendas', '/vendas', 'shopping-cart', 4, NOW(), NOW()),
-('Relatórios', 'Relatórios do sistema', '/relatorios', 'bar-chart', 5, NOW(), NOW())
-ON CONFLICT (nome) DO NOTHING;
 
--- Tipos de acesso
-INSERT INTO type_access (nome, descricao, created_at, updated_at) VALUES
-('Administrador', 'Acesso completo ao sistema', NOW(), NOW()),
-('Gerente', 'Acesso gerencial', NOW(), NOW()),
-('Operador', 'Acesso operacional limitado', NOW(), NOW())
-ON CONFLICT (nome) DO NOTHING;
+
+
+
+
+-- Inserir Clientes
+INSERT INTO clientes (empresa_id, nome, cpf_cnpj, telefone, email, endereco, data_nascimento) VALUES
+(1, 'Roberto Almeida', '123.456.789-00', '(11) 1111-2222', 'roberto@email.com', 
+ '{"logradouro": "Rua A", "numero": "100", "bairro": "Vila Olímpia", "cidade": "São Paulo", "uf": "SP", "cep": "04578-000"}', '1980-05-15'),
+(1, 'Fernanda Lima', '987.654.321-00', '(11) 2222-3333', 'fernanda@email.com', 
+ '{"logradouro": "Rua B", "numero": "200", "bairro": "Moema", "cidade": "São Paulo", "uf": "SP", "cep": "04579-000"}', '1990-08-20'),
+(2, 'Ricardo Santos', '111.222.333-44', '(11) 3333-4444', 'ricardo@email.com', 
+ '{"logradouro": "Rua C", "numero": "300", "bairro": "Itaim", "cidade": "São Paulo", "uf": "SP", "cep": "04580-000"}', '1985-12-10');
+
+-- Inserir Pets
+INSERT INTO pets (cliente_id, nome, especie, raca, sexo, data_nascimento, peso, cor) VALUES
+(1, 'Rex', 'Cachorro', 'Labrador', 'M', '2020-03-10', 25.5, 'Caramelo'),
+(1, 'Luna', 'Cachorro', 'Poodle', 'F', '2022-01-15', 8.2, 'Branco'),
+(2, 'Mimi', 'Gato', 'Siamês', 'F', '2021-07-20', 4.5, 'Cinza'),
+(3, 'Thor', 'Cachorro', 'Pastor Alemão', 'M', '2019-11-05', 32.0, 'Preto e Caramelo');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Inserir Categorias de Produtos
+INSERT INTO categorias_produtos (empresa_id, nome, descricao) VALUES
+(1, 'Rações', 'Rações para cães e gatos'),
+(1, 'Medicamentos', 'Medicamentos veterinários'),
+(1, 'Brinquedos', 'Brinquedos para pets'),
+(1, 'Higiene', 'Produtos de higiene');
+
+-- Inserir Fornecedores
+INSERT INTO fornecedores (empresa_id, nome_fantasia, razao_social, cnpj, telefone, email) VALUES
+(1, 'PetFood Brasil', 'PetFood Brasil LTDA', '11.111.111/0001-11', '(11) 4444-5555', 'vendas@petfood.com.br'),
+(1, 'VetPharma', 'VetPharma Indústria Farmacêutica', '22.222.222/0001-22', '(11) 5555-6666', 'contato@vetpharma.com.br');
+
+-- Inserir Categorias de Despesas
+INSERT INTO categorias_despesas (empresa_id, nome, descricao, tipo) VALUES
+(1, 'Aluguel', 'Aluguel do estabelecimento', 'fixa'),
+(1, 'Funcionários', 'Salários e encargos', 'fixa'),
+(1, 'Água/Luz', 'Contas de utilities', 'variavel'),
+(1, 'Compras', 'Compra de mercadorias', 'variavel');
+
+
+
+
+
+-- Inserir Produtos
+INSERT INTO produtos (empresa_id, categoria_id, fornecedor_id, codigo_barras, nome, descricao, tipo, especie_destinada, preco_custo, preco_venda, estoque_minimo) VALUES
+(1, 1, 1, '7891234567890', 'Ração Premier Cães Adultos', 'Ração premium para cães adultos', 'racao', 'Cachorro', 80.00, 120.00, 10),
+(1, 1, 1, '7891234567891', 'Ração Whiskas Gatos Castrados', 'Ração para gatos castrados', 'racao', 'Gato', 45.00, 75.00, 15),
+(1, 2, 2, '7891234567892', 'Vermífugo Drontal', 'Vermífugo para cães e gatos', 'medicamento', 'Cachorro', 15.00, 25.00, 5),
+(1, 3, 1, '7891234567893', 'Bolinha de Borracha', 'Brinquedo para cães', 'brinquedo', 'Cachorro', 5.00, 12.00, 20);
+
+-- Inserir Movimentação de Estoque Inicial
+INSERT INTO movimentacao_estoque (produto_id, tipo_movimentacao, quantidade, quantidade_anterior, quantidade_atual, motivo, usuario_id) VALUES
+(1, 'entrada', 50, 0, 50, 'Estoque inicial', 1),
+(2, 'entrada', 30, 0, 30, 'Estoque inicial', 1),
+(3, 'entrada', 20, 0, 20, 'Estoque inicial', 1),
+(4, 'entrada', 100, 0, 100, 'Estoque inicial', 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Inserir Tipos de Serviços
+INSERT INTO tipos_servicos (empresa_id, nome, categoria, duracao_minutos, valor, descricao) VALUES
+(1, 'Banho e Tosa', 'banho', 120, 80.00, 'Banho completo e tosa higiênica'),
+(1, 'Banho Simples', 'banho', 60, 40.00, 'Banho simples sem tosa'),
+(1, 'Consulta Veterinária', 'consulta', 30, 120.00, 'Consulta com veterinário'),
+(1, 'Vacinação V10', 'vacina', 15, 60.00, 'Aplicação de vacina V10');
+
+-- Inserir Agendamentos
+INSERT INTO agendamentos (empresa_id, cliente_id, pet_id, tipo_servico_id, data_agendamento, status, valor_estimado, usuario_id) VALUES
+(1, 1, 1, 1, '2024-01-20 10:00:00', 'confirmado', 80.00, 2),
+(1, 2, 3, 3, '2024-01-21 14:30:00', 'agendado', 120.00, 2),
+(1, 1, 2, 2, '2024-01-22 09:00:00', 'confirmado', 40.00, 2);
+
+
+
+
+
+-- Inserir Vendas
+INSERT INTO vendas (empresa_id, cliente_id, usuario_id, data_venda, tipo_venda, status, valor_total, desconto, valor_final, forma_pagamento) VALUES
+(1, 1, 2, '2024-01-15 10:30:00', 'balcao', 'pago', 132.00, 0, 132.00, 'cartao_credito'),
+(1, 2, 2, '2024-01-16 15:45:00', 'balcao', 'pago', 75.00, 5.00, 70.00, 'dinheiro');
+
+-- Inserir Itens da Venda
+INSERT INTO venda_itens (venda_id, produto_id, quantidade, valor_unitario, valor_total, tipo_item) VALUES
+(1, 1, 1, 120.00, 120.00, 'produto'),
+(1, 3, 1, 25.00, 25.00, 'produto'),
+(2, 2, 1, 75.00, 75.00, 'produto');
+
+-- Inserir Contas a Receber
+INSERT INTO contas_receber (venda_id, cliente_id, descricao, valor, data_vencimento, status) VALUES
+(1, 1, 'Venda #001 - Ração Premier + Vermífugo', 132.00, '2024-01-15', 'pago'),
+(2, 2, 'Venda #002 - Ração Whiskas', 70.00, '2024-01-16', 'pago');
+
+-- Inserir Contas a Pagar
+INSERT INTO contas_pagar (empresa_id, fornecedor_id, categoria_despesa_id, descricao, valor_original, data_vencimento, status, forma_pagamento) VALUES
+(1, 1, 4, 'Compra de rações - Janeiro', 2500.00, '2024-02-10', 'pendente', 'boleto'),
+(1, 2, 4, 'Medicamentos - Janeiro', 800.00, '2024-02-05', 'pendente', 'transferencia'),
+(1, NULL, 1, 'Aluguel Janeiro', 2000.00, '2024-01-05', 'pago', 'dinheiro');
+
+-- Inserir Compras
+INSERT INTO compras (empresa_id, fornecedor_id, numero_nota_fiscal, data_compra, valor_total, status, usuario_id) VALUES
+(1, 1, '12345', '2024-01-10', 2500.00, 'finalizada', 1);
+
+-- Inserir Itens da Compra
+INSERT INTO compra_itens (compra_id, produto_id, quantidade, valor_unitario, valor_total) VALUES
+(1, 1, 20, 80.00, 1600.00),
+(1, 2, 20, 45.00, 900.00);
+
+
+
+
+-- Inserir Prontuários
+INSERT INTO prontuarios (pet_id, veterinario_id, data_consulta, anamnese, diagnostico, prescricao, peso_atual, temperatura) VALUES
+(1, 3, '2024-01-10 09:00:00', 'Pet apresenta coceira constante', 'Alergia alimentar', 
+ '[{"medicamento": "Antialérgico", "dose": "1 comprimido ao dia", "duracao": "7 dias"}]', 25.5, 38.5),
+(3, 3, '2024-01-12 11:00:00', 'Primeira consulta - checkup anual', 'Pet saudável', 
+ '[{"medicamento": "Vitaminas", "dose": "2ml ao dia", "duracao": "30 dias"}]', 4.5, 38.8);

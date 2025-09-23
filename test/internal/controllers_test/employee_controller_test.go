@@ -15,8 +15,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// ... (todos os códigos acima juntos)
-
 // TestMain configuração global
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
@@ -24,25 +22,37 @@ func TestMain(m *testing.M) {
 }
 
 func TestEmployeeController_Get_Success(t *testing.T) {
+	// Setup
 	router, mockRepo, controller := setupTest()
 
-	testEmployee := createTestEmployee()
+	// Mock expectation - NOTE THE & (pointer)
+	expectedEmployee := &models.Employee{
+		Id:   1,
+		Nome: "John Doe",
+		// include other required fields
+	}
+	mockRepo.On("GetEmployee", int(1)).Return(expectedEmployee, nil)
 
-	mockRepo.On("GetEmployee", 1).Return(testEmployee, nil)
-
+	// Create router and request
 	router.GET("/employee/:id", controller.Get)
 
-	req, _ := http.NewRequest("GET", "/employee/1", nil)
 	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/employee/1", nil)
+
+	// Execute
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	// Assertions
+	assert.Equal(t, 200, w.Code)
 
 	var response models.Employee
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
 
-	assert.Equal(t, testEmployee.Id, response.Id)
-	assert.Equal(t, testEmployee.Nome, response.Nome)
+	assert.Equal(t, int(1), response.Id)
+	assert.Equal(t, "John Doe", response.Nome)
+
+	// Verify mock was called
 	mockRepo.AssertExpectations(t)
 }
 
@@ -64,7 +74,7 @@ func TestEmployeeController_Create_Success(t *testing.T) {
 	testEmployee := createTestEmployee()
 
 	// Mock do repositório
-	mockRepo.On("Create", testEmployee).Return(testEmployee, nil)
+	mockRepo.On("Create", testEmployee).Return(&testEmployee, nil)
 
 	router.POST("/employee", controller.Create)
 

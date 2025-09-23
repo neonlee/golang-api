@@ -35,7 +35,7 @@ func (p *ControllersClients) UpdateClient(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	var cliente models.Client
+	var cliente models.Cliente
 	if err := ctx.BindJSON(&cliente); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
@@ -107,7 +107,7 @@ func (p *ControllersClients) GetClients(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersClients) CreateClients(ctx *gin.Context) {
-	var client models.Client
+	var client models.Cliente
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
