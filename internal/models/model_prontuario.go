@@ -3,12 +3,9 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Prontuario struct {
-	gorm.Model
 	ID            uint      `gorm:"primaryKey" json:"id"`
 	PetID         uint      `gorm:"not null;index" json:"pet_id"`
 	VeterinarioID uint      `gorm:"not null;index" json:"veterinario_id"`
@@ -21,8 +18,8 @@ type Prontuario struct {
 	Temperatura   float64   `gorm:"type:decimal(4,2)" json:"temperatura"`
 
 	// Relacionamentos
-	Pet         Pet     `gorm:"foreignKey:PetID" json:"pet,omitempty"`
-	Veterinario Usuario `gorm:"foreignKey:VeterinarioID" json:"veterinario,omitempty"`
+	Pet         Pets     `gorm:"foreignKey:PetID" json:"pet,omitempty"`
+	Veterinario Usuarios `gorm:"foreignKey:VeterinarioID" json:"veterinario,omitempty"`
 }
 
 // Estrutura para a prescrição médica
@@ -36,7 +33,6 @@ type PrescricaoMedica struct {
 
 // Estrutura para vacinas
 type Vacina struct {
-	gorm.Model
 	ID            uint      `gorm:"primaryKey" json:"id"`
 	PetID         uint      `gorm:"not null;index" json:"pet_id"`
 	Nome          string    `gorm:"size:100;not null" json:"nome"`
@@ -48,6 +44,6 @@ type Vacina struct {
 	Observacoes   string    `gorm:"type:text" json:"observacoes"`
 
 	// Relacionamentos
-	Pet         Pet     `gorm:"foreignKey:PetID" json:"pet,omitempty"`
-	Veterinario Usuario `gorm:"foreignKey:VeterinarioID" json:"veterinario,omitempty"`
+	Pet         Pets     `gorm:"foreignKey:PetID" json:"pet,omitempty"`
+	Veterinario Usuarios `gorm:"foreignKey:VeterinarioID" json:"veterinario,omitempty"`
 }

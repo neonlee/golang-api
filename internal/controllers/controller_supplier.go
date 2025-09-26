@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"net/http"
@@ -10,10 +10,10 @@ import (
 )
 
 type ControllersSuppliers struct {
-	repository *repositories.SupplierRepository
+	repository repositories.FornecedorRepository
 }
 
-func NewSuppliersController(connection *repositories.SupplierRepository) *ControllersSuppliers {
+func NewSuppliersController(connection repositories.FornecedorRepository) *ControllersSuppliers {
 	return &ControllersSuppliers{repository: connection}
 }
 
@@ -28,25 +28,19 @@ func NewSuppliersController(connection *repositories.SupplierRepository) *Contro
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersSuppliers) Update(ctx *gin.Context) {
-	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
-		return
-	}
-	var cliente models.Supplier
-	if err := ctx.BindJSON(&cliente); err != nil {
+	var Fornecedor models.Fornecedor
+	if err := ctx.BindJSON(&Fornecedor); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	client, err := p.repository.UpdateSupplier(user, cliente)
+	err := p.repository.Update(&Fornecedor)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, &Fornecedor)
 }
 
 // Getclient godoc
@@ -67,7 +61,7 @@ func (p *ControllersSuppliers) Get(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.GetSupplier(user)
+	client, err := p.repository.GetByID(uint(user))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -87,7 +81,7 @@ func (p *ControllersSuppliers) Get(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersSuppliers) GetSuppliers(ctx *gin.Context) {
-	result, err := p.repository.GetSuppliers()
+	result, err := p.repository.GetTotalFornecedores(uint(1))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -107,20 +101,20 @@ func (p *ControllersSuppliers) GetSuppliers(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersSuppliers) Create(ctx *gin.Context) {
-	var client models.Supplier
+	var client models.Fornecedor
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := p.repository.Create(client)
+	err = p.repository.Create(&client)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, &client)
 }
 
 // DeleteClient godoc
@@ -136,16 +130,16 @@ func (p *ControllersSuppliers) Create(ctx *gin.Context) {
 func (p *ControllersSuppliers) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
+	fornecedorId, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.DeleteSupplier(user)
+	err = p.repository.Delete(uint(fornecedorId))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, gin.H{"deleted": true})
 }

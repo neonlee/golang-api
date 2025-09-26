@@ -16,14 +16,14 @@ import (
 
 type AuthRepository interface {
 	Login(req requests.LoginRequest) (*responses.LoginResponse, error)
-	GenerateToken(usuario models.Usuario) (string, error)
-	ValidateToken(token string) (*models.Usuario, error)
+	GenerateToken(usuario models.Usuarios) (string, error)
+	ValidateToken(token string) (*models.Usuarios, error)
 	Logout(token string) error
 	RefreshToken(token string) (string, error)
-	GetUsuarioByEmailAndEmpresa(email string, empresaID uint) (*models.Usuario, error)
+	GetUsuarioByEmailAndEmpresa(email string, empresaID uint) (*models.Usuarios, error)
 	checkPassword(hashedPassword, password string) bool
 	getUsuarioPermissoes(usuarioID uint) ([]string, error)
-	GetUsuarioByID(id uint) (*models.Usuario, error)
+	GetUsuarioByID(id uint) (*models.Usuarios, error)
 }
 type authRepository struct {
 	db            *gorm.DB
@@ -86,8 +86,8 @@ func (r *authRepository) Login(req requests.LoginRequest) (*responses.LoginRespo
 	}, nil
 }
 
-func (r *authRepository) GetUsuarioByEmailAndEmpresa(email string, empresaID uint) (*models.Usuario, error) {
-	var usuario models.Usuario
+func (r *authRepository) GetUsuarioByEmailAndEmpresa(email string, empresaID uint) (*models.Usuarios, error) {
+	var usuario models.Usuarios
 	err := r.db.
 		Preload("Empresa").
 		Where("email = ? AND empresa_id = ?", email, empresaID).
@@ -104,7 +104,7 @@ func (r *authRepository) checkPassword(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func (r *authRepository) GenerateToken(usuario models.Usuario) (string, error) {
+func (r *authRepository) GenerateToken(usuario models.Usuarios) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id":    usuario.ID,
 		"empresa_id": usuario.EmpresaID,
@@ -116,7 +116,7 @@ func (r *authRepository) GenerateToken(usuario models.Usuario) (string, error) {
 	return token.SignedString([]byte(r.jwtSecret))
 }
 
-func (r *authRepository) ValidateToken(tokenString string) (*models.Usuario, error) {
+func (r *authRepository) ValidateToken(tokenString string) (*models.Usuarios, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(r.jwtSecret), nil
 	})
@@ -133,8 +133,8 @@ func (r *authRepository) ValidateToken(tokenString string) (*models.Usuario, err
 	return nil, errors.New("token inválido")
 }
 
-func (r *authRepository) GetUsuarioByID(id uint) (*models.Usuario, error) {
-	var usuario models.Usuario
+func (r *authRepository) GetUsuarioByID(id uint) (*models.Usuarios, error) {
+	var usuario models.Usuarios
 	err := r.db.Preload("Empresa").First(&usuario, id).Error
 	return &usuario, err
 }
@@ -142,7 +142,7 @@ func (r *authRepository) GetUsuarioByID(id uint) (*models.Usuario, error) {
 func (r *authRepository) getUsuarioPermissoes(usuarioID uint) ([]string, error) {
 	var permissoes []string
 	err := r.db.
-		Model(&models.Permissao{}).
+		Model(&models.Permissoes{}).
 		Joins("JOIN usuario_perfis ON permissoes.perfil_id = usuario_perfis.perfil_id").
 		Joins("JOIN modulos ON permissoes.modulo_id = modulos.id").
 		Where("usuario_perfis.usuario_id = ?", usuarioID).

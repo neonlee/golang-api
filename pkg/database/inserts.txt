@@ -6,7 +6,7 @@ INSERT INTO planos (nome, descricao, valor_mensal, modulos_disponiveis, limite_u
 
 -- Inserir Módulos
 INSERT INTO modulos (nome, descricao, categoria, icone, ordem) VALUES
-('clientes', 'Cadastro de Clientes', 'comum', 'users', 1),
+('clientes', 'Cadastro de Clientess', 'comum', 'users', 1),
 ('pets', 'Cadastro de Pets', 'comum', 'pet', 2),
 ('vendas', 'Vendas de Produtos', 'comum', 'shopping-cart', 3),
 ('estoque', 'Controle de Estoque', 'comum', 'package', 4),
@@ -77,7 +77,7 @@ INSERT INTO usuario_perfis (usuario_id, perfil_id) VALUES
 
 
 
--- Inserir Clientes
+-- Inserir Clientess
 INSERT INTO clientes (empresa_id, nome, cpf_cnpj, telefone, email, endereco, data_nascimento) VALUES
 (1, 'Roberto Almeida', '123.456.789-00', '(11) 1111-2222', 'roberto@email.com', 
  '{"logradouro": "Rua A", "numero": "100", "bairro": "Vila Olímpia", "cidade": "São Paulo", "uf": "SP", "cep": "04578-000"}', '1980-05-15'),

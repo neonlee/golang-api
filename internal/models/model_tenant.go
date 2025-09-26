@@ -11,7 +11,6 @@ import (
 )
 
 type Empresa struct {
-	gorm.Model
 	ID             uint           `gorm:"primaryKey" json:"id"`
 	NomeFantasia   string         `gorm:"size:100;not null" json:"nome_fantasia"`
 	RazaoSocial    string         `gorm:"size:100" json:"razao_social"`
@@ -27,12 +26,11 @@ type Empresa struct {
 	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 
 	// Relacionamentos
-	Plano    Plano     `gorm:"foreignKey:PlanoID" json:"plano,omitempty"`
-	Usuarios []Usuario `gorm:"foreignKey:EmpresaID" json:"usuarios,omitempty"`
+	Plano    Plano      `gorm:"foreignKey:PlanoID" json:"plano,omitempty"`
+	Usuarios []Usuarios `gorm:"foreignKey:EmpresaID" json:"usuarios,omitempty"`
 }
 
 type Plano struct {
-	gorm.Model
 	ID                 uint    `gorm:"primaryKey" json:"id"`
 	Nome               string  `gorm:"size:50;not null" json:"nome"`
 	Descricao          string  `gorm:"type:text" json:"descricao"`

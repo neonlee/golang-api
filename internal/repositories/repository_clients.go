@@ -7,46 +7,46 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClienteRepository interface {
-	Create(cliente *models.Cliente) error
-	GetByID(id uint) (*models.Cliente, error)
-	Update(cliente *models.Cliente) error
+type ClientesRepository interface {
+	Create(cliente *models.Clientes) error
+	GetByID(id uint) (*models.Clientes, error)
+	Update(cliente *models.Clientes) error
 	Delete(id uint) error
-	ListByEmpresa(empresaID uint, filters requests.ClienteFilter) ([]models.Cliente, error)
-	Search(empresaID uint, termo string) ([]models.Cliente, error)
-	GetWithPets(id uint) (*models.Cliente, error)
-	GetTotalClientes(empresaID uint) (int64, error)
-	GetClientesNovos(empresaID uint, mes int, ano int) ([]models.Cliente, error)
+	ListByEmpresa(empresaID uint, filters requests.ClientesFilter) ([]models.Clientes, error)
+	Search(empresaID uint, termo string) ([]models.Clientes, error)
+	GetWithPets(id uint) (*models.Clientes, error)
+	GetTotalClientess(empresaID uint) (int64, error)
+	GetClientessNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error)
 }
 
 type clienteRepository struct {
 	db *gorm.DB
 }
 
-func NewClienteRepository(db *gorm.DB) ClienteRepository {
+func NewClientesRepository(db *gorm.DB) ClientesRepository {
 	return &clienteRepository{db: db}
 }
 
-func (r *clienteRepository) Create(cliente *models.Cliente) error {
+func (r *clienteRepository) Create(cliente *models.Clientes) error {
 	return r.db.Create(cliente).Error
 }
 
-func (r *clienteRepository) GetByID(id uint) (*models.Cliente, error) {
-	var cliente models.Cliente
-	err := r.db.Preload("Pets").First(&cliente, id).Error
+func (r *clienteRepository) GetByID(id uint) (*models.Clientes, error) {
+	var cliente models.Clientes
+	err := r.db.Preload("Pets").Preload("Vendas").First(&cliente, id).Error
 	return &cliente, err
 }
 
-func (r *clienteRepository) Update(cliente *models.Cliente) error {
+func (r *clienteRepository) Update(cliente *models.Clientes) error {
 	return r.db.Save(cliente).Error
 }
 
 func (r *clienteRepository) Delete(id uint) error {
-	return r.db.Delete(&models.Cliente{}, id).Error
+	return r.db.Delete(&models.Clientes{}, id).Error
 }
 
-func (r *clienteRepository) ListByEmpresa(empresaID uint, filters requests.ClienteFilter) ([]models.Cliente, error) {
-	var clientes []models.Cliente
+func (r *clienteRepository) ListByEmpresa(empresaID uint, filters requests.ClientesFilter) ([]models.Clientes, error) {
+	var clientes []models.Clientes
 
 	query := r.db.Where("empresa_id = ?", empresaID)
 
@@ -66,8 +66,8 @@ func (r *clienteRepository) ListByEmpresa(empresaID uint, filters requests.Clien
 	return clientes, err
 }
 
-func (r *clienteRepository) Search(empresaID uint, termo string) ([]models.Cliente, error) {
-	var clientes []models.Cliente
+func (r *clienteRepository) Search(empresaID uint, termo string) ([]models.Clientes, error) {
+	var clientes []models.Clientes
 
 	err := r.db.
 		Where("empresa_id = ? AND (nome ILIKE ? OR email ILIKE ? OR telefone ILIKE ?)",
@@ -80,8 +80,8 @@ func (r *clienteRepository) Search(empresaID uint, termo string) ([]models.Clien
 	return clientes, err
 }
 
-func (r *clienteRepository) GetWithPets(id uint) (*models.Cliente, error) {
-	var cliente models.Cliente
+func (r *clienteRepository) GetWithPets(id uint) (*models.Clientes, error) {
+	var cliente models.Clientes
 	err := r.db.
 		Preload("Pets").
 		First(&cliente, id).Error
@@ -89,14 +89,14 @@ func (r *clienteRepository) GetWithPets(id uint) (*models.Cliente, error) {
 	return &cliente, err
 }
 
-func (r *clienteRepository) GetTotalClientes(empresaID uint) (int64, error) {
+func (r *clienteRepository) GetTotalClientess(empresaID uint) (int64, error) {
 	var count int64
-	err := r.db.Model(&models.Cliente{}).Where("empresa_id = ?", empresaID).Count(&count).Error
+	err := r.db.Model(&models.Clientes{}).Where("empresa_id = ?", empresaID).Count(&count).Error
 	return count, err
 }
 
-func (r *clienteRepository) GetClientesNovos(empresaID uint, mes int, ano int) ([]models.Cliente, error) {
-	var clientes []models.Cliente
+func (r *clienteRepository) GetClientessNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error) {
+	var clientes []models.Clientes
 
 	err := r.db.
 		Where("empresa_id = ? AND EXTRACT(MONTH FROM created_at) = ? AND EXTRACT(YEAR FROM created_at) = ?",

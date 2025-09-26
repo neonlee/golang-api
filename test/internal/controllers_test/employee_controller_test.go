@@ -26,7 +26,7 @@ func TestEmployeeController_Get_Success(t *testing.T) {
 	router, mockRepo, controller := setupTest()
 
 	// Mock expectation - NOTE THE & (pointer)
-	expectedEmployee := &models.Employee{
+	expectedEmployee := &models.Employees{
 		Id:   1,
 		Nome: "John Doe",
 		// include other required fields
@@ -45,7 +45,7 @@ func TestEmployeeController_Get_Success(t *testing.T) {
 	// Assertions
 	assert.Equal(t, 200, w.Code)
 
-	var response models.Employee
+	var response models.Employees
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 
@@ -90,7 +90,7 @@ func TestEmployeeController_Create_Success(t *testing.T) {
 	// Verificações
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var response models.Employee
+	var response models.Employees
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, testEmployee.Id, response.Id)
@@ -120,24 +120,24 @@ type MockEmployeeRepository struct {
 	mock.Mock
 }
 
-func (m *MockEmployeeRepository) GetEmployee(id int) (*models.Employee, error) {
+func (m *MockEmployeeRepository) GetEmployee(id int) (*models.Employees, error) {
 	args := m.Called(id)
-	return args.Get(0).(*models.Employee), args.Error(1)
+	return args.Get(0).(*models.Employees), args.Error(1)
 }
 
-func (m *MockEmployeeRepository) GetEmployees() (*[]models.Employee, error) {
+func (m *MockEmployeeRepository) GetEmployees() (*[]models.Employees, error) {
 	args := m.Called()
-	return args.Get(0).(*[]models.Employee), args.Error(1)
+	return args.Get(0).(*[]models.Employees), args.Error(1)
 }
 
-func (m *MockEmployeeRepository) Create(employee models.Employee) (*models.Employee, error) {
+func (m *MockEmployeeRepository) Create(employee models.Employees) (*models.Employees, error) {
 	args := m.Called(employee)
-	return args.Get(0).(*models.Employee), args.Error(1)
+	return args.Get(0).(*models.Employees), args.Error(1)
 }
 
-func (m *MockEmployeeRepository) UpdateEmployee(id int, employee models.Employee) (*models.Employee, error) {
+func (m *MockEmployeeRepository) UpdateEmployee(id int, employee models.Employees) (*models.Employees, error) {
 	args := m.Called(id, employee)
-	return args.Get(0).(*models.Employee), args.Error(1)
+	return args.Get(0).(*models.Employees), args.Error(1)
 }
 
 func (m *MockEmployeeRepository) DeleteEmployee(id int) (bool, error) {
@@ -157,8 +157,8 @@ func setupTest() (*gin.Engine, *MockEmployeeRepository, *Controllers.EmployeeCon
 }
 
 // createTestEmployee cria um employee de teste
-func createTestEmployee() models.Employee {
-	return models.Employee{
+func createTestEmployee() models.Employees {
+	return models.Employees{
 		Id:   1,
 		Nome: "John Doe",
 	}
@@ -169,7 +169,7 @@ func TestEmployeeController_Create_RepositoryError(t *testing.T) {
 	testEmployee := createTestEmployee()
 	expectedError := errors.New("database error")
 
-	mockRepo.On("Create", testEmployee).Return(models.Employee{}, expectedError)
+	mockRepo.On("Create", testEmployee).Return(models.Employees{}, expectedError)
 
 	router.POST("/employee", controller.Create)
 
@@ -192,7 +192,7 @@ func TestEmployeeController_Get_NotFound(t *testing.T) {
 	router, mockRepo, controller := setupTest()
 
 	expectedError := errors.New("employee not found")
-	mockRepo.On("GetEmployee", 999).Return(models.Employee{}, expectedError)
+	mockRepo.On("GetEmployee", 999).Return(models.Employees{}, expectedError)
 
 	router.GET("/employee/:id", controller.Get)
 
@@ -211,7 +211,7 @@ func TestEmployeeController_Get_NotFound(t *testing.T) {
 func TestEmployeeController_GetEmployees_Success(t *testing.T) {
 	router, mockRepo, controller := setupTest()
 
-	testEmployees := []models.Employee{
+	testEmployees := []models.Employees{
 		createTestEmployee(),
 		{
 			Id:   2,
@@ -234,7 +234,7 @@ func TestEmployeeController_GetEmployees_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response []models.Employee
+	var response []models.Employees
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Len(t, response, 2)
@@ -246,7 +246,7 @@ func TestEmployeeController_GetEmployees_Error(t *testing.T) {
 	router, mockRepo, controller := setupTest()
 
 	expectedError := errors.New("failed to get employees")
-	mockRepo.On("GetEmployees").Return([]models.Employee{}, expectedError)
+	mockRepo.On("GetEmployees").Return([]models.Employees{}, expectedError)
 
 	router.GET("/employee", controller.GetEmployees)
 
@@ -278,7 +278,7 @@ func TestEmployeeController_Update_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response models.Employee
+	var response models.Employees
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, "John Updated", response.Nome)

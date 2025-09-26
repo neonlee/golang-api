@@ -4,7 +4,7 @@ type PetFilter struct {
 	Nome       string
 	Tipo       string
 	Raca       string
-	ClienteID  uint
+	ClientesID uint
 	EmpresaID  uint
 	Pagina     int
 	TamanhoPag int

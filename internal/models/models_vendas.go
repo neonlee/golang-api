@@ -3,16 +3,13 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
-type Venda struct {
-	gorm.Model
+type Vendas struct {
 	ID             uint      `gorm:"primaryKey" json:"id"`
 	EmpresaID      uint      `gorm:"not null;index" json:"empresa_id"`
-	ClienteID      uint      `gorm:"not null;index" json:"cliente_id"`
-	UsuarioID      uint      `gorm:"not null;index" json:"usuario_id"`
+	ClientesID     uint      `gorm:"column:cliente_id;not null;index" json:"cliente_id"`
+	UsuarioID      uint      `gorm:"column:usuario_id;not null;index" json:"usuario_id"`
 	DataVenda      time.Time `gorm:"not null" json:"data_venda"`
 	TipoVenda      string    `gorm:"size:20" json:"tipo_venda"`
 	Status         string    `gorm:"size:20" json:"status"`
@@ -22,16 +19,19 @@ type Venda struct {
 	FormaPagamento string    `gorm:"size:30" json:"forma_pagamento"`
 	Observacoes    string    `gorm:"type:text" json:"observacoes"`
 
+	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt *time.Time `gorm:"index" json:"deleted_at,omitempty"`
+
 	// Relacionamentos
 	Empresa       Empresa        `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Cliente       Cliente        `gorm:"foreignKey:ClienteID" json:"cliente,omitempty"`
-	Usuario       Usuario        `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Clientes      Clientes       `gorm:"foreignKey:ClientesID" json:"cliente,omitempty"`
+	Usuario       Usuarios       `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 	Itens         []VendaItem    `gorm:"foreignKey:VendaID" json:"itens,omitempty"`
 	ContasReceber []ContaReceber `gorm:"foreignKey:VendaID" json:"contas_receber,omitempty"`
 }
 
 type VendaItem struct {
-	gorm.Model
 	ID            uint    `gorm:"primaryKey" json:"id"`
 	VendaID       uint    `gorm:"not null;index" json:"venda_id"`
 	ProdutoID     *uint   `gorm:"index" json:"produto_id"`
@@ -42,13 +42,12 @@ type VendaItem struct {
 	TipoItem      string  `gorm:"size:10" json:"tipo_item"`
 
 	// Relacionamentos
-	Venda       Venda       `gorm:"foreignKey:VendaID" json:"venda,omitempty"`
-	Produto     Produto     `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
+	Venda       Vendas      `gorm:"foreignKey:VendaID" json:"venda,omitempty"`
+	Produto     Produtos    `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
 	TipoServico TipoServico `gorm:"foreignKey:TipoServicoID" json:"tipo_servico,omitempty"`
 }
 
 type TipoServico struct {
-	gorm.Model
 	ID             uint    `gorm:"primaryKey" json:"id"`
 	EmpresaID      uint    `gorm:"not null;index" json:"empresa_id"`
 	Nome           string  `gorm:"size:50;not null" json:"nome"`
@@ -65,10 +64,9 @@ type TipoServico struct {
 }
 
 type Agendamento struct {
-	gorm.Model
 	ID              uint      `gorm:"primaryKey" json:"id"`
 	EmpresaID       uint      `gorm:"not null;index" json:"empresa_id"`
-	ClienteID       uint      `gorm:"not null;index" json:"cliente_id"`
+	ClientesID      uint      `gorm:"not null;index" json:"cliente_id"`
 	PetID           uint      `gorm:"not null;index" json:"pet_id"`
 	TipoServicoID   uint      `gorm:"not null;index" json:"tipo_servico_id"`
 	DataAgendamento time.Time `gorm:"not null" json:"data_agendamento"`
@@ -79,8 +77,8 @@ type Agendamento struct {
 
 	// Relacionamentos
 	Empresa     Empresa     `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Cliente     Cliente     `gorm:"foreignKey:ClienteID" json:"cliente,omitempty"`
-	Pet         Pet         `gorm:"foreignKey:PetID" json:"pet,omitempty"`
+	Clientes    Clientes    `gorm:"foreignKey:ClientesID" json:"cliente,omitempty"`
+	Pet         Pets        `gorm:"foreignKey:PetID" json:"pet,omitempty"`
 	TipoServico TipoServico `gorm:"foreignKey:TipoServicoID" json:"tipo_servico,omitempty"`
-	Usuario     Usuario     `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Usuario     Usuarios    `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

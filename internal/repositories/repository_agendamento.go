@@ -36,7 +36,7 @@ func (r *agendamentoRepository) Create(agendamento *models.Agendamento) error {
 func (r *agendamentoRepository) GetByID(id uint) (*models.Agendamento, error) {
 	var agendamento models.Agendamento
 	err := r.db.
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Pet").
 		Preload("TipoServico").
 		Preload("Usuario").
@@ -65,7 +65,7 @@ func (r *agendamentoRepository) ListByData(empresaID uint, data time.Time) ([]mo
 
 	err := r.db.
 		Where("empresa_id = ? AND DATE(data_agendamento) = ?", empresaID, dataStr).
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Pet").
 		Preload("TipoServico").
 		Preload("Usuario").
@@ -80,7 +80,7 @@ func (r *agendamentoRepository) ListByPeriodo(empresaID uint, inicio, fim time.T
 
 	err := r.db.
 		Where("empresa_id = ? AND data_agendamento BETWEEN ? AND ?", empresaID, inicio, fim).
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Pet").
 		Preload("TipoServico").
 		Preload("Usuario").
@@ -95,7 +95,7 @@ func (r *agendamentoRepository) ListByPet(petID uint) ([]models.Agendamento, err
 
 	err := r.db.
 		Where("pet_id = ?", petID).
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("TipoServico").
 		Preload("Usuario").
 		Order("data_agendamento DESC").

@@ -3,7 +3,7 @@ package responses
 import "petApi/internal/models"
 
 type UsuarioResponse struct {
-	Usuario   models.Usuario  `json:"usuario"`
+	Usuario   models.Usuarios `json:"usuario"`
 	ID        uint            `json:"id"`
 	Nome      string          `json:"nome"`
 	Email     string          `json:"email"`

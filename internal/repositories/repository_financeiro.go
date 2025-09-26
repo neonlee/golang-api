@@ -35,7 +35,7 @@ func (r *financeiroRepository) CreateContaReceber(conta *models.ContaReceber) er
 
 func (r *financeiroRepository) GetContaReceberByID(id uint) (*models.ContaReceber, error) {
 	var conta models.ContaReceber
-	err := r.db.Preload("Cliente").Preload("Venda").First(&conta, id).Error
+	err := r.db.Preload("Clientes").Preload("Venda").First(&conta, id).Error
 	return &conta, err
 }
 
@@ -104,7 +104,7 @@ func (r *financeiroRepository) GetContasVencidas(empresaID uint) ([]models.Conta
 	err := r.db.
 		Where("empresa_id = ? AND data_vencimento < ? AND status = ?",
 			empresaID, hoje, "pendente").
-		Preload("Cliente").
+		Preload("Clientes").
 		Find(&contasReceber).Error
 	if err != nil {
 		return nil, nil, err

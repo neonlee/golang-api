@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"net/http"
@@ -10,10 +10,10 @@ import (
 )
 
 type ControllersPets struct {
-	repository *repositories.PetsRepository
+	repository repositories.PetRepository
 }
 
-func NewPetsController(connection *repositories.PetsRepository) *ControllersPets {
+func NewPetsController(connection repositories.PetRepository) *ControllersPets {
 	return &ControllersPets{repository: connection}
 }
 
@@ -27,15 +27,15 @@ func NewPetsController(connection *repositories.PetsRepository) *ControllersPets
 //	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
-func (p *ControllersPets) GetPets(ctx *gin.Context) {
-	result, err := p.repository.GetPets()
+// func (p *ControllersPets) GetPets(ctx *gin.Context) {
+// 	result, err := p.repository.GetPets()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, err)
+// 	}
 
-	ctx.JSON(http.StatusOK, result)
-}
+// 	ctx.JSON(http.StatusOK, result)
+// }
 
 // GetPet godoc
 //
@@ -56,7 +56,7 @@ func (p *ControllersPets) GetPet(ctx *gin.Context) {
 		return
 	}
 
-	result, err := p.repository.GetPet(pet)
+	result, err := p.repository.GetByID(uint(pet))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -76,25 +76,19 @@ func (p *ControllersPets) GetPet(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) UpdatePet(ctx *gin.Context) {
-	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
-		return
-	}
-	var pet models.Pet
+	var pet models.Pets
 	if err := ctx.BindJSON(&pet); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	client, err := p.repository.UpdatePet(user, pet)
+	err := p.repository.Update(&pet)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, &pet)
 }
 
 // createClients godoc
@@ -108,20 +102,20 @@ func (p *ControllersPets) UpdatePet(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
 func (p *ControllersPets) CreatePets(ctx *gin.Context) {
-	var pet models.Pet
+	var pet models.Pets
 	err := ctx.BindJSON(&pet)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := p.repository.Create(pet)
+	err = p.repository.Create(&pet)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, &pet)
 }
 
 // DeleteClient godoc
@@ -142,11 +136,11 @@ func (p *ControllersPets) DeletePet(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.DeletePet(user)
+	err = p.repository.Delete(uint(user))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, &user)
 }

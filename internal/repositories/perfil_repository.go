@@ -13,7 +13,7 @@ type PerfilRepository interface {
 	Delete(id uint) error
 	ListByEmpresa(empresaID uint) ([]models.Perfil, error)
 	GetWithPermissoes(id uint) (*models.Perfil, error)
-	UpdatePermissoes(perfilID uint, permissoes []models.Permissao) error
+	UpdatePermissoes(perfilID uint, permissoes []models.Permissoes) error
 }
 
 type perfilRepository struct {
@@ -54,7 +54,7 @@ func (r *perfilRepository) GetWithPermissoes(id uint) (*models.Perfil, error) {
 	return &perfil, err
 }
 
-func (r *perfilRepository) UpdatePermissoes(perfilID uint, permissoes []models.Permissao) error {
+func (r *perfilRepository) UpdatePermissoes(perfilID uint, permissoes []models.Permissoes) error {
 	var perfil models.Perfil
 	err := r.db.Preload("Permissoes").First(&perfil, perfilID).Error
 	if err != nil {

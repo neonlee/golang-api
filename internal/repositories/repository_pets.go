@@ -9,13 +9,13 @@ import (
 
 // PetRepository interface
 type PetRepository interface {
-	Create(pet *models.Pet) error
-	GetByID(id uint) (*models.Pet, error)
-	Update(pet *models.Pet) error
+	Create(pet *models.Pets) error
+	GetByID(id uint) (*models.Pets, error)
+	Update(pet *models.Pets) error
 	Delete(id uint) error
-	GetByCliente(clienteID uint) ([]models.Pet, error)
-	GetWithCliente(id uint) (*models.Pet, error)
-	ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pet, error)
+	GetByClientes(clienteID uint) ([]models.Pets, error)
+	GetWithClientes(id uint) (*models.Pets, error)
+	ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pets, error)
 	GetTotalPets(empresaID uint) (int64, error)
 	GetPetsPorEspecie(empresaID uint) (map[string]int64, error)
 }
@@ -30,38 +30,38 @@ func NewPetRepository(db *gorm.DB) PetRepository {
 	return &petRepository{db: db}
 }
 
-func (r *petRepository) Create(pet *models.Pet) error {
+func (r *petRepository) Create(pet *models.Pets) error {
 	return r.db.Create(pet).Error
 }
 
-func (r *petRepository) GetByID(id uint) (*models.Pet, error) {
-	var pet models.Pet
-	err := r.db.Preload("Cliente").First(&pet, id).Error
+func (r *petRepository) GetByID(id uint) (*models.Pets, error) {
+	var pet models.Pets
+	err := r.db.Preload("Clientes").First(&pet, id).Error
 	return &pet, err
 }
 
-func (r *petRepository) Update(pet *models.Pet) error {
+func (r *petRepository) Update(pet *models.Pets) error {
 	return r.db.Save(pet).Error
 }
 
 func (r *petRepository) Delete(id uint) error {
-	return r.db.Delete(&models.Pet{}, id).Error
+	return r.db.Delete(&models.Pets{}, id).Error
 }
 
-func (r *petRepository) GetByCliente(clienteID uint) ([]models.Pet, error) {
-	var pets []models.Pet
+func (r *petRepository) GetByClientes(clienteID uint) ([]models.Pets, error) {
+	var pets []models.Pets
 	err := r.db.Where("cliente_id = ?", clienteID).Order("nome ASC").Find(&pets).Error
 	return pets, err
 }
 
-func (r *petRepository) GetWithCliente(id uint) (*models.Pet, error) {
-	var pet models.Pet
-	err := r.db.Preload("Cliente").First(&pet, id).Error
+func (r *petRepository) GetWithClientes(id uint) (*models.Pets, error) {
+	var pet models.Pets
+	err := r.db.Preload("Clientes").First(&pet, id).Error
 	return &pet, err
 }
 
-func (r *petRepository) ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pet, error) {
-	var pets []models.Pet
+func (r *petRepository) ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pets, error) {
+	var pets []models.Pets
 
 	query := r.db.
 		Joins("JOIN clientes ON pets.cliente_id = clientes.id").
@@ -79,14 +79,14 @@ func (r *petRepository) ListByEmpresa(empresaID uint, filters requests.PetFilter
 		query = query.Where("pets.raca ILIKE ?", "%"+filters.Raca+"%")
 	}
 
-	err := query.Preload("Cliente").Order("pets.nome ASC").Find(&pets).Error
+	err := query.Preload("Clientes").Order("pets.nome ASC").Find(&pets).Error
 	return pets, err
 }
 
 func (r *petRepository) GetTotalPets(empresaID uint) (int64, error) {
 	var count int64
 	err := r.db.
-		Model(&models.Pet{}).
+		Model(&models.Pets{}).
 		Joins("JOIN clientes ON pets.cliente_id = clientes.id").
 		Where("clientes.empresa_id = ?", empresaID).
 		Count(&count).Error
@@ -103,7 +103,7 @@ func (r *petRepository) GetPetsPorEspecie(empresaID uint) (map[string]int64, err
 	var results []Result
 
 	err := r.db.
-		Model(&models.Pet{}).
+		Model(&models.Pets{}).
 		Select("especie, COUNT(*) as count").
 		Joins("JOIN clientes ON pets.cliente_id = clientes.id").
 		Where("clientes.empresa_id = ?", empresaID).

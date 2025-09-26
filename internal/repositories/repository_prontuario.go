@@ -33,7 +33,7 @@ func (r *prontuarioRepository) GetByID(id uint) (*models.Prontuario, error) {
 	var prontuario models.Prontuario
 	err := r.db.
 		Preload("Pet").
-		Preload("Pet.Cliente").
+		Preload("Pet.Clientes").
 		Preload("Veterinario").
 		First(&prontuario, id).Error
 
@@ -63,7 +63,7 @@ func (r *prontuarioRepository) GetByVeterinario(veterinarioID uint, inicio, fim 
 		Where("veterinario_id = ? AND DATE(data_consulta) BETWEEN ? AND ?",
 			veterinarioID, inicio, fim).
 		Preload("Pet").
-		Preload("Pet.Cliente").
+		Preload("Pet.Clientes").
 		Order("data_consulta DESC").
 		Find(&prontuarios).Error
 
@@ -102,7 +102,7 @@ func (r *prontuarioRepository) GetVacinasVencidas(empresaID uint) ([]models.Vaci
 	var vacinas []models.Vacina
 
 	// Subquery para buscar pets da empresa
-	subquery := r.db.Model(&models.Pet{}).
+	subquery := r.db.Model(&models.Pets{}).
 		Select("pets.id").
 		Joins("JOIN clientes ON pets.cliente_id = clientes.id").
 		Where("clientes.empresa_id = ?", empresaID)
@@ -110,7 +110,7 @@ func (r *prontuarioRepository) GetVacinasVencidas(empresaID uint) ([]models.Vaci
 	err := r.db.
 		Where("pet_id IN (?) AND data_proxima < NOW()", subquery).
 		Preload("Pet").
-		Preload("Pet.Cliente").
+		Preload("Pet.Clientes").
 		Preload("Veterinario").
 		Order("data_proxima ASC").
 		Find(&vacinas).Error

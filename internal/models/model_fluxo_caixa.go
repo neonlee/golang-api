@@ -3,12 +3,9 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
-type ContaBancaria struct {
-	gorm.Model
+type ContaBancarias struct {
 	ID           uint    `gorm:"primaryKey" json:"id"`
 	EmpresaID    uint    `gorm:"not null;index" json:"empresa_id"`
 	Nome         string  `gorm:"size:50;not null" json:"nome"`
@@ -20,12 +17,11 @@ type ContaBancaria struct {
 	Ativo        bool    `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa       Empresa                `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Movimentacoes []MovimentacaoBancaria `gorm:"foreignKey:ContaBancariaID" json:"movimentacoes,omitempty"`
+	Empresa       Empresa                 `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Movimentacoes []MovimentacaoBancarias `gorm:"foreignKey:ContaBancariaID" json:"movimentacoes,omitempty"`
 }
 
-type MovimentacaoBancaria struct {
-	gorm.Model
+type MovimentacaoBancarias struct {
 	ID               uint      `gorm:"primaryKey" json:"id"`
 	ContaBancariaID  uint      `gorm:"not null;index" json:"conta_bancaria_id"`
 	TipoMovimentacao string    `gorm:"size:20" json:"tipo_movimentacao"` // entrada, saida, transferencia
@@ -39,14 +35,13 @@ type MovimentacaoBancaria struct {
 	UsuarioID        uint      `gorm:"not null;index" json:"usuario_id"`
 
 	// Relacionamentos
-	ContaBancaria ContaBancaria `gorm:"foreignKey:ContaBancariaID" json:"conta_bancaria,omitempty"`
-	ContaReceber  ContaReceber  `gorm:"foreignKey:ContaReceberID" json:"conta_receber,omitempty"`
-	ContaPagar    ContaPagar    `gorm:"foreignKey:ContaPagarID" json:"conta_pagar,omitempty"`
-	Usuario       Usuario       `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	ContaBancaria ContaBancarias `gorm:"foreignKey:ContaBancariaID" json:"conta_bancaria,omitempty"`
+	ContaReceber  ContaReceber   `gorm:"foreignKey:ContaReceberID" json:"conta_receber,omitempty"`
+	ContaPagar    ContaPagar     `gorm:"foreignKey:ContaPagarID" json:"conta_pagar,omitempty"`
+	Usuario       Usuarios       `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }
 
-type FechamentoCaixa struct {
-	gorm.Model
+type FechamentoCaixas struct {
 	ID             uint      `gorm:"primaryKey" json:"id"`
 	EmpresaID      uint      `gorm:"not null;index" json:"empresa_id"`
 	UsuarioID      uint      `gorm:"not null;index" json:"usuario_id"`
@@ -60,6 +55,6 @@ type FechamentoCaixa struct {
 	Status         string    `gorm:"size:20;default:'aberto'" json:"status"`
 
 	// Relacionamentos
-	Empresa Empresa `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Usuario Usuario `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Empresa Empresa  `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Usuario Usuarios `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

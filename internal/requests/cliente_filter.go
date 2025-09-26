@@ -1,6 +1,6 @@
 package requests
 
-type ClienteFilter struct {
+type ClientesFilter struct {
 	Nome  string
 	Email string
 	Ativo *bool

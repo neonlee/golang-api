@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"net/http"
@@ -10,10 +10,10 @@ import (
 )
 
 type ControllersServices struct {
-	repository *repositories.ServicesRepository
+	repository repositories.ServicoRepository
 }
 
-func NewServicesController(connection *repositories.ServicesRepository) *ControllersServices {
+func NewServicesController(connection repositories.ServicoRepository) *ControllersServices {
 	return &ControllersServices{repository: connection}
 }
 
@@ -28,25 +28,19 @@ func NewServicesController(connection *repositories.ServicesRepository) *Control
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
 func (p *ControllersServices) UpdateService(ctx *gin.Context) {
-	id := ctx.Param("id")
 
-	user, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
-		return
-	}
-	var cliente models.Service
-	if err := ctx.BindJSON(&cliente); err != nil {
+	var servico models.TipoServico
+	if err := ctx.BindJSON(&servico); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	client, err := p.repository.UpdateServices(user, cliente)
+	err := p.repository.UpdateTipoServico(&servico)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, &servico)
 }
 
 // Getclient godoc
@@ -67,7 +61,7 @@ func (p *ControllersServices) GetService(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.GetService(user)
+	client, err := p.repository.GetTipoServicoByID(uint(user))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -86,15 +80,15 @@ func (p *ControllersServices) GetService(ctx *gin.Context) {
 //	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-func (p *ControllersServices) GetServices(ctx *gin.Context) {
-	result, err := p.repository.GetServices()
+// func (p *ControllersServices) GetServices(ctx *gin.Context) {
+// 	result, err := p.repository.GetServices()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, err)
+// 	}
 
-	ctx.JSON(http.StatusOK, result)
-}
+// 	ctx.JSON(http.StatusOK, result)
+// }
 
 // PostPet godoc
 //
@@ -107,20 +101,20 @@ func (p *ControllersServices) GetServices(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersServices) CreateServices(ctx *gin.Context) {
-	var client models.Service
+	var client models.TipoServico
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := p.repository.Create(client)
+	err = p.repository.CreateTipoServico(&client)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, &client)
 }
 
 // DeleteService godoc
@@ -141,11 +135,11 @@ func (p *ControllersServices) DeleteService(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
-	client, err := p.repository.DeleteServices(user)
+	err = p.repository.DeleteTipoServico(uint(user))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, gin.H{"deleted": true})
 }

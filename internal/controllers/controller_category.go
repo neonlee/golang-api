@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"net/http"
@@ -9,143 +9,78 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllersCategory struct {
-	repository *repositories.CategoryRepository
+type CategoriaController struct {
+	Repo repositories.CategoriaRepository
 }
 
-func NewCategoryController(connection *repositories.CategoryRepository) *ControllersCategory {
-	return &ControllersCategory{repository: connection}
+func NewCategoriaController(repo repositories.CategoriaRepository) *CategoriaController {
+	return &CategoriaController{Repo: repo}
 }
 
-// UpdateService godoc
-//
-//	@Summary		atualiza o serviço
-//	@Description	atualiza o serviço
-//	@Tags			client
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Category
-//	@Failure		500	{object}	map[string]string
-//	@Router			/clients [get]
-func (p *ControllersCategory) Update(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	user, err := strconv.Atoi(id)
+func (c *CategoriaController) GetAll(ctx *gin.Context) {
+	categorias, err := c.Repo.GetWithProdutos(1)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	var cliente models.Category
-	if err := ctx.BindJSON(&cliente); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
+	ctx.JSON(http.StatusOK, categorias)
+}
+
+func (c *CategoriaController) GetByID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	client, err := p.repository.UpdateCategorys(user, cliente)
-
+	categoria, err := c.Repo.GetByID(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
-
-	ctx.JSON(http.StatusOK, client)
-}
-
-// Getclient godoc
-//
-//	@Summary		Lista um cliente
-//	@Description	Retorna um cliente
-//	@Tags			client
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Category
-//	@Failure		500	{object}	map[string]string
-//	@Router			/client/:id [get]
-func (p *ControllersCategory) Get(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	user, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	client, err := p.repository.GetCategory(user)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
-
-	ctx.JSON(http.StatusOK, client)
+	ctx.JSON(http.StatusOK, categoria)
 }
 
-// GetServices godoc
-//
-//	@Summary		Lista todos os clientes
-//	@Description	Retorna todos os clientes cadastrados
-//	@Tags			client
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Category
-//	@Failure		500	{object}	map[string]string
-//	@Router			/clients [get]
-func (p *ControllersCategory) GetCategorys(ctx *gin.Context) {
-	result, err := p.repository.GetCategorys()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-// PostPet godoc
-//
-//	@Summary		Cria um cliente
-//	@Description	Cria um cliente
-//	@Tags			clients
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Category
-//	@Failure		500	{object}	map[string]string
-//	@Router			/client [get]
-func (p *ControllersCategory) Create(ctx *gin.Context) {
-	var client models.Category
-	err := ctx.BindJSON(&client)
-	if err != nil {
+func (c *CategoriaController) Create(ctx *gin.Context) {
+	var categoria models.CategoriaProdutos
+	if err := ctx.ShouldBindJSON(&categoria); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	result, err := p.repository.Create(client)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-// DeleteService godoc
-//
-//	@Summary		Deleta um cliente
-//	@Description	deleta um cliente
-//	@Tags			client
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		bool
-//	@Failure		500	{object}	map[string]string
-//	@Router			/client [get]
-func (p *ControllersCategory) Delete(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	user, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+	if err := c.Repo.Create(&categoria); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	client, err := p.repository.DeleteCategorys(user)
+	ctx.JSON(http.StatusCreated, categoria)
+}
 
+func (c *CategoriaController) Update(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
 	}
+	var categoria models.CategoriaProdutos
+	if err := ctx.ShouldBindJSON(&categoria); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	categoria.ID = uint(id)
+	if err := c.Repo.Update(&categoria); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, categoria)
+}
 
-	ctx.JSON(http.StatusOK, client)
+func (c *CategoriaController) Delete(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	if err := c.Repo.Delete(uint(id)); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.Status(http.StatusNoContent)
 }

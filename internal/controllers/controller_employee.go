@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"net/http"
@@ -10,10 +10,10 @@ import (
 )
 
 type EmployeeController struct {
-	Repo repositories.EmployeeRepository
+	Repo repositories.EmployeesRepository
 }
 
-func NewEmployeeController(repository repositories.EmployeeRepository) *EmployeeController {
+func NewEmployeeController(repository repositories.EmployeesRepository) *EmployeeController {
 	return &EmployeeController{Repo: repository}
 }
 
@@ -39,13 +39,13 @@ func (p *EmployeeController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var employee models.Employee
+	var employee models.Employees
 	if err := ctx.BindJSON(&employee); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
 
-	updatedEmployee, err := p.Repo.UpdateEmployee(employeeID, employee)
+	updatedEmployee, err := p.Repo.UpdateEmployees(employeeID, employee)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
@@ -75,7 +75,7 @@ func (p *EmployeeController) Get(ctx *gin.Context) {
 		return
 	}
 
-	employee, err := p.Repo.GetEmployee(employeeID)
+	employee, err := p.Repo.GetEmployees(employeeID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
@@ -94,15 +94,6 @@ func (p *EmployeeController) Get(ctx *gin.Context) {
 //	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/employees [get]
-func (p *EmployeeController) GetEmployees(ctx *gin.Context) {
-	employees, err := p.Repo.GetEmployees()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, employees)
-}
 
 // CreateEmployee godoc
 //
@@ -117,7 +108,7 @@ func (p *EmployeeController) GetEmployees(ctx *gin.Context) {
 //	@Failure		500		{object}	map[string]string
 //	@Router			/employees [post]
 func (p *EmployeeController) Create(ctx *gin.Context) {
-	var employee models.Employee
+	var employee models.Employees
 	err := ctx.BindJSON(&employee)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -154,7 +145,7 @@ func (p *EmployeeController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	success, err := p.Repo.DeleteEmployee(employeeID)
+	success, err := p.Repo.DeleteEmployees(employeeID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return

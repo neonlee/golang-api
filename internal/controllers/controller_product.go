@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"fmt"
@@ -11,21 +11,21 @@ import (
 )
 
 type ProductController struct {
-	repository *repositories.ProductRepository
+	repository repositories.ProdutoRepository
 }
 
-func NewProductController(repository *repositories.ProductRepository) *ProductController {
+func NewProductController(repository repositories.ProdutoRepository) *ProductController {
 	return &ProductController{repository: repository}
 }
 
-func (pc *ProductController) GetAllProducts(c *gin.Context) {
-	products, err := pc.repository.GetAll()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch products"})
-		return
-	}
-	c.JSON(http.StatusOK, products)
-}
+// func (pc *ProductController) GetAllProducts(c *gin.Context) {
+// 	products, err := pc.repository.GetAll()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch products"})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, products)
+// }
 
 func (pc *ProductController) GetProductByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
@@ -42,36 +42,31 @@ func (pc *ProductController) GetProductByID(c *gin.Context) {
 }
 
 func (pc *ProductController) CreateProduct(c *gin.Context) {
-	var product models.Produto
+	var product models.Produtos
 	if err := c.ShouldBindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid input: %s", err.Error())})
 		return
 	}
-	created, err := pc.repository.Create(product)
+	err := pc.repository.Create(&product)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create product %s", err.Error())})
 		return
 	}
-	c.JSON(http.StatusCreated, created)
+	c.JSON(http.StatusCreated, &product)
 }
 
 func (pc *ProductController) UpdateProduct(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
-		return
-	}
-	var product models.Produto
+	var product models.Produtos
 	if err := c.ShouldBindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	updated, err := pc.repository.Update(product, id)
+	err := pc.repository.Update(&product)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update product"})
 		return
 	}
-	c.JSON(http.StatusOK, updated)
+	c.JSON(http.StatusOK, &product)
 }
 
 func (pc *ProductController) DeleteProduct(c *gin.Context) {

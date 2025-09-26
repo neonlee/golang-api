@@ -9,16 +9,16 @@ import (
 
 // ProdutoRepository interface
 type ProdutoRepository interface {
-	Create(produto *models.Produto) error
-	GetByID(id uint) (*models.Produto, error)
-	Update(produto *models.Produto) error
+	Create(produto *models.Produtos) error
+	GetByID(id uint) (*models.Produtos, error)
+	Update(produto *models.Produtos) error
 	Delete(id uint) error
-	ListByEmpresa(empresaID uint, filters requests.ProdutoFilter) ([]models.Produto, error)
-	GetByCategoria(categoriaID uint) ([]models.Produto, error)
-	Search(empresaID uint, termo string) ([]models.Produto, error)
-	GetProdutosBaixoEstoque(empresaID uint) ([]models.Produto, error)
+	ListByEmpresa(empresaID uint, filters requests.ProdutoFilter) ([]models.Produtos, error)
+	GetByCategoria(categoriaID uint) ([]models.Produtos, error)
+	Search(empresaID uint, termo string) ([]models.Produtos, error)
+	GetProdutosBaixoEstoque(empresaID uint) ([]models.Produtos, error)
 	UpdateEstoque(produtoID uint, quantidade int) error
-	GetProdutoComEstoque(id uint) (*models.Produto, error)
+	GetProdutoComEstoque(id uint) (*models.Produtos, error)
 }
 
 type produtoRepository struct {
@@ -29,12 +29,12 @@ func NewProdutoRepository(db *gorm.DB) ProdutoRepository {
 	return &produtoRepository{db: db}
 }
 
-func (r *produtoRepository) Create(produto *models.Produto) error {
+func (r *produtoRepository) Create(produto *models.Produtos) error {
 	return r.db.Create(produto).Error
 }
 
-func (r *produtoRepository) GetByID(id uint) (*models.Produto, error) {
-	var produto models.Produto
+func (r *produtoRepository) GetByID(id uint) (*models.Produtos, error) {
+	var produto models.Produtos
 	err := r.db.
 		Preload("Categoria").
 		Preload("Fornecedor").
@@ -43,16 +43,16 @@ func (r *produtoRepository) GetByID(id uint) (*models.Produto, error) {
 	return &produto, err
 }
 
-func (r *produtoRepository) Update(produto *models.Produto) error {
+func (r *produtoRepository) Update(produto *models.Produtos) error {
 	return r.db.Save(produto).Error
 }
 
 func (r *produtoRepository) Delete(id uint) error {
-	return r.db.Delete(&models.Produto{}, id).Error
+	return r.db.Delete(&models.Produtos{}, id).Error
 }
 
-func (r *produtoRepository) ListByEmpresa(empresaID uint, filters requests.ProdutoFilter) ([]models.Produto, error) {
-	var produtos []models.Produto
+func (r *produtoRepository) ListByEmpresa(empresaID uint, filters requests.ProdutoFilter) ([]models.Produtos, error) {
+	var produtos []models.Produtos
 
 	query := r.db.Where("empresa_id = ?", empresaID)
 
@@ -81,8 +81,8 @@ func (r *produtoRepository) ListByEmpresa(empresaID uint, filters requests.Produ
 	return produtos, err
 }
 
-func (r *produtoRepository) GetByCategoria(categoriaID uint) ([]models.Produto, error) {
-	var produtos []models.Produto
+func (r *produtoRepository) GetByCategoria(categoriaID uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
 	err := r.db.
 		Where("categoria_id = ?", categoriaID).
 		Preload("Categoria").
@@ -93,8 +93,8 @@ func (r *produtoRepository) GetByCategoria(categoriaID uint) ([]models.Produto, 
 	return produtos, err
 }
 
-func (r *produtoRepository) Search(empresaID uint, termo string) ([]models.Produto, error) {
-	var produtos []models.Produto
+func (r *produtoRepository) Search(empresaID uint, termo string) ([]models.Produtos, error) {
+	var produtos []models.Produtos
 
 	err := r.db.
 		Where("empresa_id = ? AND (nome ILIKE ? OR codigo_barras ILIKE ?)",
@@ -108,8 +108,8 @@ func (r *produtoRepository) Search(empresaID uint, termo string) ([]models.Produ
 	return produtos, err
 }
 
-func (r *produtoRepository) GetProdutosBaixoEstoque(empresaID uint) ([]models.Produto, error) {
-	var produtos []models.Produto
+func (r *produtoRepository) GetProdutosBaixoEstoque(empresaID uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
 
 	// Subquery para obter estoque atual
 	subquery := r.db.Model(&models.MovimentacaoEstoque{}).
@@ -154,8 +154,8 @@ func (r *produtoRepository) UpdateEstoque(produtoID uint, quantidade int) error 
 	return r.db.Create(&novaMovimentacao).Error
 }
 
-func (r *produtoRepository) GetProdutoComEstoque(id uint) (*models.Produto, error) {
-	var produto models.Produto
+func (r *produtoRepository) GetProdutoComEstoque(id uint) (*models.Produtos, error) {
+	var produto models.Produtos
 
 	// Subquery para estoque atual
 	subquery := r.db.Model(&models.MovimentacaoEstoque{}).

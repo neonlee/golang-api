@@ -3,12 +3,9 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
-type Usuario struct {
-	gorm.Model
+type Usuarios struct {
 	ID          uint       `gorm:"primaryKey" json:"id"`
 	EmpresaID   uint       `gorm:"not null;index" json:"empresa_id"`
 	Nome        string     `gorm:"size:100;not null" json:"nome"`
@@ -23,12 +20,11 @@ type Usuario struct {
 	// Relacionamentos
 	Empresa       Empresa               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	UsuarioPerfis []UsuarioPerfil       `gorm:"foreignKey:UsuarioID" json:"usuario_perfis,omitempty"`
-	Vendas        []Venda               `gorm:"foreignKey:UsuarioID" json:"vendas,omitempty"`
+	Vendas        []Vendas              `gorm:"foreignKey:UsuarioID" json:"vendas,omitempty"`
 	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:UsuarioID" json:"movimentacoes,omitempty"`
 }
 
 type Perfil struct {
-	gorm.Model
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	EmpresaID uint   `gorm:"not null;index" json:"empresa_id"`
 	Nome      string `gorm:"size:50;not null" json:"nome"`
@@ -37,12 +33,11 @@ type Perfil struct {
 
 	// Relacionamentos
 	Empresa       Empresa         `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Permissoes    []Permissao     `gorm:"foreignKey:PerfilID" json:"permissoes,omitempty"`
+	Permissoes    []Permissoes    `gorm:"foreignKey:PerfilID" json:"permissoes,omitempty"`
 	UsuarioPerfis []UsuarioPerfil `gorm:"foreignKey:PerfilID" json:"usuario_perfis,omitempty"`
 }
 
-type Permissao struct {
-	gorm.Model
+type Permissoes struct {
 	ID                 uint `gorm:"primaryKey" json:"id"`
 	PerfilID           uint `gorm:"not null;index" json:"perfil_id"`
 	ModuloID           uint `gorm:"not null;index" json:"modulo_id"`
@@ -62,12 +57,11 @@ type UsuarioPerfil struct {
 	CreatedAt time.Time `json:"created_at"`
 
 	// Relacionamentos
-	Usuario Usuario `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
-	Perfil  Perfil  `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
+	Usuario Usuarios `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Perfil  Perfil   `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
 }
 
 type Modulo struct {
-	gorm.Model
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	Nome      string `gorm:"size:50;not null" json:"nome"`
 	Descricao string `gorm:"type:text" json:"descricao"`
@@ -76,5 +70,5 @@ type Modulo struct {
 	Ordem     int    `gorm:"default:0" json:"ordem"`
 	Ativo     bool   `gorm:"default:true" json:"ativo"`
 
-	Permissoes []Permissao `gorm:"foreignKey:ModuloID" json:"permissoes,omitempty"`
+	Permissoes []Permissoes `gorm:"foreignKey:ModuloID" json:"permissoes,omitempty"`
 }

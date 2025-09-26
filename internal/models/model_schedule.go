@@ -15,7 +15,7 @@ const (
 type Schedule struct {
 	PetshopId   int       `json:"petshop_id"`
 	Id          int       `json:"id"`
-	Pet         Pet       `json:"pet"`
+	Pet         Pets      `json:"pet"`
 	Sku         string    `json:"sku"`
 	Services    []Service `json:"services"`
 	Observation string    `json:"observation"`

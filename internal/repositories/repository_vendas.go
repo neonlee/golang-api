@@ -5,19 +5,20 @@ import (
 	"petApi/internal/models"
 	"petApi/internal/requests"
 	"petApi/internal/responses"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type VendaRepository interface {
-	Create(venda *models.Venda, itens []models.VendaItem) error
-	GetByID(id uint) (*models.Venda, error)
+	Create(venda *models.Vendas, itens []models.VendaItem) error
+	GetByID(id uint) (*models.Vendas, error)
 	UpdateStatus(id uint, status string) error
 	CancelarVenda(id uint, motivo string) error
-	ListByEmpresa(empresaID uint, filters requests.VendaFilter) ([]models.Venda, error)
-	GetVendasDoDia(empresaID uint, data string) ([]models.Venda, error)
-	GetVendasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Venda, error)
+	ListByEmpresa(empresaID uint, filters requests.VendaFilter) ([]models.Vendas, error)
+	GetVendasDoDia(empresaID uint, data string) ([]models.Vendas, error)
+	GetVendasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Vendas, error)
 	GetResumoVendas(empresaID uint, periodo string) (*responses.ResumoVendas, error)
 	GetProdutosMaisVendidos(empresaID uint, limite int) ([]responses.ProdutoVendas, error)
 	GetVendasPorFormaPagamento(empresaID uint, inicio, fim string) (map[string]float64, error)
@@ -31,7 +32,7 @@ func NewVendaRepository(db *gorm.DB) VendaRepository {
 	return &vendaRepository{db: db}
 }
 
-func (r *vendaRepository) Create(venda *models.Venda, itens []models.VendaItem) error {
+func (r *vendaRepository) Create(venda *models.Vendas, itens []models.VendaItem) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Criar a venda
 		if err := tx.Create(venda).Error; err != nil {
@@ -51,7 +52,7 @@ func (r *vendaRepository) Create(venda *models.Venda, itens []models.VendaItem) 
 					ProdutoID:        *itens[i].ProdutoID,
 					TipoMovimentacao: "saida",
 					Quantidade:       itens[i].Quantidade,
-					Motivo:           "Venda #" + string(venda.ID),
+					Motivo:           "Venda #" + strconv.FormatUint(uint64(venda.ID), 10),
 					UsuarioID:        venda.UsuarioID,
 				}
 				if err := tx.Create(&movimentacao).Error; err != nil {
@@ -64,10 +65,10 @@ func (r *vendaRepository) Create(venda *models.Venda, itens []models.VendaItem) 
 	})
 }
 
-func (r *vendaRepository) GetByID(id uint) (*models.Venda, error) {
-	var venda models.Venda
+func (r *vendaRepository) GetByID(id uint) (*models.Vendas, error) {
+	var venda models.Vendas
 	err := r.db.
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Usuario").
 		Preload("Itens").
 		Preload("Itens.Produto").
@@ -78,13 +79,13 @@ func (r *vendaRepository) GetByID(id uint) (*models.Venda, error) {
 }
 
 func (r *vendaRepository) UpdateStatus(id uint, status string) error {
-	return r.db.Model(&models.Venda{}).Where("id = ?", id).Update("status", status).Error
+	return r.db.Model(&models.Vendas{}).Where("id = ?", id).Update("status", status).Error
 }
 
 func (r *vendaRepository) CancelarVenda(id uint, motivo string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Buscar venda e itens
-		var venda models.Venda
+		var venda models.Vendas
 		if err := tx.Preload("Itens").First(&venda, id).Error; err != nil {
 			return err
 		}
@@ -96,7 +97,7 @@ func (r *vendaRepository) CancelarVenda(id uint, motivo string) error {
 					ProdutoID:        *item.ProdutoID,
 					TipoMovimentacao: "entrada",
 					Quantidade:       item.Quantidade,
-					Motivo:           "Cancelamento venda #" + string(venda.ID) + " - " + motivo,
+					Motivo:           "Cancelamento venda #" + strconv.FormatUint(uint64(venda.ID), 10) + " - " + motivo,
 					UsuarioID:        venda.UsuarioID,
 				}
 				if err := tx.Create(&movimentacao).Error; err != nil {
@@ -112,13 +113,13 @@ func (r *vendaRepository) CancelarVenda(id uint, motivo string) error {
 	})
 }
 
-func (r *vendaRepository) ListByEmpresa(empresaID uint, filters requests.VendaFilter) ([]models.Venda, error) {
-	var vendas []models.Venda
+func (r *vendaRepository) ListByEmpresa(empresaID uint, filters requests.VendaFilter) ([]models.Vendas, error) {
+	var vendas []models.Vendas
 
 	query := r.db.Where("empresa_id = ?", empresaID)
 
-	if filters.ClienteID != nil {
-		query = query.Where("cliente_id = ?", *filters.ClienteID)
+	if filters.ClientesID != nil {
+		query = query.Where("cliente_id = ?", *filters.ClientesID)
 	}
 
 	if filters.DataInicio != "" && filters.DataFim != "" {
@@ -134,7 +135,7 @@ func (r *vendaRepository) ListByEmpresa(empresaID uint, filters requests.VendaFi
 	}
 
 	err := query.
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Usuario").
 		Order("data_venda DESC").
 		Find(&vendas).Error
@@ -142,12 +143,12 @@ func (r *vendaRepository) ListByEmpresa(empresaID uint, filters requests.VendaFi
 	return vendas, err
 }
 
-func (r *vendaRepository) GetVendasDoDia(empresaID uint, data string) ([]models.Venda, error) {
-	var vendas []models.Venda
+func (r *vendaRepository) GetVendasDoDia(empresaID uint, data string) ([]models.Vendas, error) {
+	var vendas []models.Vendas
 
 	err := r.db.
 		Where("empresa_id = ? AND DATE(data_venda) = ?", empresaID, data).
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Usuario").
 		Preload("Itens").
 		Order("data_venda ASC").
@@ -175,7 +176,7 @@ func (r *vendaRepository) GetResumoVendas(empresaID uint, periodo string) (*resp
 
 	// Total de vendas no período
 	err := r.db.
-		Model(&models.Venda{}).
+		Model(&models.Vendas{}).
 		Where("empresa_id = ? AND data_venda >= ? AND status = ?", empresaID, startDate, "pago").
 		Select("COUNT(*) as quantidade_mes, COALESCE(SUM(valor_final), 0) as total_mes").
 		Scan(&resumo).Error
@@ -186,13 +187,13 @@ func (r *vendaRepository) GetResumoVendas(empresaID uint, periodo string) (*resp
 
 	// Calcular totais da semana e hoje
 	var totalSemana, totalHoje float64
-	r.db.Model(&models.Venda{}).
+	r.db.Model(&models.Vendas{}).
 		Where("empresa_id = ? AND data_venda >= ? AND status = ?",
 			empresaID, now.AddDate(0, 0, -7), "pago").
 		Select("COALESCE(SUM(valor_final), 0)").
 		Scan(&totalSemana)
 
-	r.db.Model(&models.Venda{}).
+	r.db.Model(&models.Vendas{}).
 		Where("empresa_id = ? AND DATE(data_venda) = ? AND status = ?",
 			empresaID, now.Format("2006-01-02"), "pago").
 		Select("COALESCE(SUM(valor_final), 0)").
@@ -232,11 +233,11 @@ func (r *vendaRepository) GetVendasPorFormaPagamento(empresaID uint, inicio, fim
 	return resultados, err
 }
 
-func (r *vendaRepository) GetVendasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Venda, error) {
-	var vendas []models.Venda
+func (r *vendaRepository) GetVendasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Vendas, error) {
+	var vendas []models.Vendas
 	err := r.db.
 		Where("empresa_id = ? AND DATE(data_venda) BETWEEN ? AND ?", empresaID, inicio, fim).
-		Preload("Cliente").
+		Preload("Clientes").
 		Preload("Usuario").
 		Preload("Itens").
 		Order("data_venda DESC").

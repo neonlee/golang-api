@@ -4,6 +4,7 @@ import (
 	"petApi/internal/models"
 	"petApi/internal/requests"
 	"petApi/internal/responses"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -46,7 +47,7 @@ func (r *compraRepository) Create(compra *models.Compra, itens []models.CompraIt
 				ProdutoID:        itens[i].ProdutoID,
 				TipoMovimentacao: "entrada",
 				Quantidade:       itens[i].Quantidade,
-				Motivo:           "Compra #" + string(compra.ID),
+				Motivo:           "Compra #" + strconv.FormatUint(uint64(compra.ID), 10),
 				UsuarioID:        compra.UsuarioID,
 			}
 			if err := tx.Create(&movimentacao).Error; err != nil {

@@ -3,12 +3,9 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Compra struct {
-	gorm.Model
 	ID               uint      `gorm:"primaryKey" json:"id"`
 	EmpresaID        uint      `gorm:"not null;index" json:"empresa_id"`
 	FornecedorID     uint      `gorm:"not null;index" json:"fornecedor_id"`
@@ -25,12 +22,11 @@ type Compra struct {
 	// Relacionamentos
 	Empresa    Empresa      `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Fornecedor Fornecedor   `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
-	Usuario    Usuario      `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Usuario    Usuarios     `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 	Itens      []CompraItem `gorm:"foreignKey:CompraID" json:"itens,omitempty"`
 }
 
 type CompraItem struct {
-	gorm.Model
 	ID            uint    `gorm:"primaryKey" json:"id"`
 	CompraID      uint    `gorm:"not null;index" json:"compra_id"`
 	ProdutoID     uint    `gorm:"not null;index" json:"produto_id"`
@@ -39,15 +35,14 @@ type CompraItem struct {
 	ValorTotal    float64 `gorm:"type:decimal(10,2)" json:"valor_total"`
 
 	// Relacionamentos
-	Compra  Compra  `gorm:"foreignKey:CompraID" json:"compra,omitempty"`
-	Produto Produto `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
+	Compra  Compra   `gorm:"foreignKey:CompraID" json:"compra,omitempty"`
+	Produto Produtos `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
 }
 
 type ContaReceber struct {
-	gorm.Model
 	ID             uint       `gorm:"primaryKey" json:"id"`
 	VendaID        *uint      `gorm:"index" json:"venda_id"`
-	ClienteID      uint       `gorm:"not null;index" json:"cliente_id"`
+	ClientesID     uint       `gorm:"not null;index" json:"cliente_id"`
 	Descricao      string     `gorm:"size:100;not null" json:"descricao"`
 	Valor          float64    `gorm:"type:decimal(10,2)" json:"valor"`
 	DataVencimento time.Time  `gorm:"type:date" json:"data_vencimento"`
@@ -56,12 +51,11 @@ type ContaReceber struct {
 	FormaPagamento string     `gorm:"size:30" json:"forma_pagamento"`
 
 	// Relacionamentos
-	Venda   Venda   `gorm:"foreignKey:VendaID" json:"venda,omitempty"`
-	Cliente Cliente `gorm:"foreignKey:ClienteID" json:"cliente,omitempty"`
+	Venda    Vendas   `gorm:"foreignKey:VendaID" json:"venda,omitempty"`
+	Clientes Clientes `gorm:"foreignKey:ClientesID" json:"cliente,omitempty"`
 }
 
 type ContaPagar struct {
-	gorm.Model
 	ID                 uint       `gorm:"primaryKey" json:"id"`
 	EmpresaID          uint       `gorm:"not null;index" json:"empresa_id"`
 	FornecedorID       *uint      `gorm:"index" json:"fornecedor_id"`
@@ -85,11 +79,10 @@ type ContaPagar struct {
 	Empresa          Empresa          `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Fornecedor       Fornecedor       `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	CategoriaDespesa CategoriaDespesa `gorm:"foreignKey:CategoriaDespesaID" json:"categoria_despesa,omitempty"`
-	Usuario          Usuario          `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Usuario          Usuarios         `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }
 
 type CategoriaDespesa struct {
-	gorm.Model
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	EmpresaID uint   `gorm:"not null;index" json:"empresa_id"`
 	Nome      string `gorm:"size:50;not null" json:"nome"`

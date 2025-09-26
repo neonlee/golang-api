@@ -14,13 +14,13 @@ import (
 
 // UsuarioRepository interface
 type UsuarioRepository interface {
-	Create(usuario *models.Usuario, senha string) error
-	GetByID(id uint) (*models.Usuario, error)
-	GetByEmail(email string) (*models.Usuario, error)
-	Update(usuario *models.Usuario) error
+	Create(usuario *models.Usuarios, senha string) error
+	GetByID(id uint) (*models.Usuarios, error)
+	GetByEmail(email string) (*models.Usuarios, error)
+	Update(usuario *models.Usuarios) error
 	Delete(id uint) error
 	UpdateSenha(id uint, novaSenha string) error
-	ListByEmpresa(empresaID uint, filters requests.UsuarioFilter) ([]models.Usuario, error)
+	ListByEmpresa(empresaID uint, filters requests.UsuarioFilter) ([]models.Usuarios, error)
 	GetWithPerfis(id uint) (*responses.UsuarioResponse, error)
 	AssignPerfis(usuarioID uint, perfisIDs []uint) error
 	GetPermissoes(usuarioID uint) ([]string, error)
@@ -36,7 +36,7 @@ func NewUsuarioRepository(db *gorm.DB) UsuarioRepository {
 	return &usuarioRepository{db: db}
 }
 
-func (r *usuarioRepository) Create(usuario *models.Usuario, senha string) error {
+func (r *usuarioRepository) Create(usuario *models.Usuarios, senha string) error {
 	// Hash da senha
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(senha), bcrypt.DefaultCost)
 	if err != nil {
@@ -47,8 +47,8 @@ func (r *usuarioRepository) Create(usuario *models.Usuario, senha string) error 
 	return r.db.Create(usuario).Error
 }
 
-func (r *usuarioRepository) GetByID(id uint) (*models.Usuario, error) {
-	var usuario models.Usuario
+func (r *usuarioRepository) GetByID(id uint) (*models.Usuarios, error) {
+	var usuario models.Usuarios
 	err := r.db.Preload("Empresa").First(&usuario, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -59,8 +59,8 @@ func (r *usuarioRepository) GetByID(id uint) (*models.Usuario, error) {
 	return &usuario, nil
 }
 
-func (r *usuarioRepository) GetByEmail(email string) (*models.Usuario, error) {
-	var usuario models.Usuario
+func (r *usuarioRepository) GetByEmail(email string) (*models.Usuarios, error) {
+	var usuario models.Usuarios
 	err := r.db.Preload("Empresa").Where("email = ?", email).First(&usuario).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -71,12 +71,12 @@ func (r *usuarioRepository) GetByEmail(email string) (*models.Usuario, error) {
 	return &usuario, nil
 }
 
-func (r *usuarioRepository) Update(usuario *models.Usuario) error {
+func (r *usuarioRepository) Update(usuario *models.Usuarios) error {
 	return r.db.Save(usuario).Error
 }
 
 func (r *usuarioRepository) Delete(id uint) error {
-	return r.db.Delete(&models.Usuario{}, id).Error
+	return r.db.Delete(&models.Usuarios{}, id).Error
 }
 
 func (r *usuarioRepository) UpdateSenha(id uint, novaSenha string) error {
@@ -85,11 +85,11 @@ func (r *usuarioRepository) UpdateSenha(id uint, novaSenha string) error {
 		return err
 	}
 
-	return r.db.Model(&models.Usuario{}).Where("id = ?", id).Update("senha_hash", string(hashedPassword)).Error
+	return r.db.Model(&models.Usuarios{}).Where("id = ?", id).Update("senha_hash", string(hashedPassword)).Error
 }
 
-func (r *usuarioRepository) ListByEmpresa(empresaID uint, filters requests.UsuarioFilter) ([]models.Usuario, error) {
-	var usuarios []models.Usuario
+func (r *usuarioRepository) ListByEmpresa(empresaID uint, filters requests.UsuarioFilter) ([]models.Usuarios, error) {
+	var usuarios []models.Usuarios
 
 	query := r.db.Where("empresa_id = ?", empresaID)
 
@@ -114,7 +114,7 @@ func (r *usuarioRepository) ListByEmpresa(empresaID uint, filters requests.Usuar
 }
 
 func (r *usuarioRepository) GetWithPerfis(id uint) (*responses.UsuarioResponse, error) {
-	var usuario models.Usuario
+	var usuario models.Usuarios
 	err := r.db.
 		Preload("Empresa").
 		Preload("UsuarioPerfis").
@@ -173,7 +173,7 @@ func (r *usuarioRepository) GetPermissoes(usuarioID uint) ([]string, error) {
 	var permissoes []string
 
 	err := r.db.
-		Model(&models.Permissao{}).
+		Model(&models.Permissoes{}).
 		Joins("JOIN usuario_perfis ON permissoes.perfil_id = usuario_perfis.perfil_id").
 		Joins("JOIN modulos ON permissoes.modulo_id = modulos.id").
 		Where("usuario_perfis.usuario_id = ?", usuarioID).
@@ -187,7 +187,7 @@ func (r *usuarioRepository) HasPermission(usuarioID uint, modulo string, acao st
 	var count int64
 
 	query := r.db.
-		Model(&models.Permissao{}).
+		Model(&models.Permissoes{}).
 		Joins("JOIN usuario_perfis ON permissoes.perfil_id = usuario_perfis.perfil_id").
 		Joins("JOIN modulos ON permissoes.modulo_id = modulos.id").
 		Where("usuario_perfis.usuario_id = ?", usuarioID).
@@ -212,7 +212,7 @@ func (r *usuarioRepository) HasPermission(usuarioID uint, modulo string, acao st
 
 func (r *usuarioRepository) CheckEmpresaAccess(usuarioID uint, empresaID uint) bool {
 	var count int64
-	err := r.db.Model(&models.Usuario{}).
+	err := r.db.Model(&models.Usuarios{}).
 		Where("id = ? AND empresa_id = ?", usuarioID, empresaID).
 		Count(&count).Error
 

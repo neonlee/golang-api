@@ -2,14 +2,11 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
-type Pet struct {
-	gorm.Model
+type Pets struct {
 	ID             uint       `gorm:"primaryKey" json:"id"`
-	ClienteID      uint       `gorm:"not null;index" json:"cliente_id"`
+	ClientesID     uint       `gorm:"column:cliente_id;not null;index" json:"cliente_id"`
 	Nome           string     `gorm:"size:50;not null" json:"nome"`
 	Especie        string     `gorm:"size:20" json:"especie"`
 	Raca           string     `gorm:"size:50" json:"raca"`
@@ -21,7 +18,6 @@ type Pet struct {
 	FotoURL        string     `gorm:"size:255" json:"foto_url"`
 
 	// Relacionamentos
-	Cliente      Cliente       `gorm:"foreignKey:ClienteID" json:"cliente,omitempty"`
 	Agendamentos []Agendamento `gorm:"foreignKey:PetID" json:"agendamentos,omitempty"`
 	Prontuarios  []Prontuario  `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
 }

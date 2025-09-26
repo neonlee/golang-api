@@ -11,7 +11,7 @@ CREATE TABLE planos (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Tabela de Empresas/Clientes
+-- Tabela de Empresas/Clientess
 CREATE TABLE empresas (
     id SERIAL PRIMARY KEY,
     nome_fantasia VARCHAR(100) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE usuario_perfis (
     PRIMARY KEY (usuario_id, perfil_id)
 );
 
--- Tabela de Clientes
+-- Tabela de Clientess
 CREATE TABLE clientes (
     id SERIAL PRIMARY KEY,
     empresa_id INT REFERENCES empresas(id),

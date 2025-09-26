@@ -21,21 +21,21 @@ func main() {
 	m := migrations.NewMigrationsDB(dbConnection)
 	m.RunMigrations()
 
-	petsRepo := repositories.NewPetsRepository(dbConnection)
-	ClientsRepo := repositories.NewClientsRepository(dbConnection)
-	servicesRepo := repositories.NewServicesRepository(dbConnection)
+	petsRepo := repositories.NewPetRepository(dbConnection)
+	ClientsRepo := repositories.NewClientesRepository(dbConnection)
+	servicesRepo := repositories.NewServicoRepository(dbConnection)
 	categoryRepo := repositories.NewCategoryRepository(dbConnection)
-	employeeRepo := repositories.NewEmployeeRepository(dbConnection)
+	employeeRepo := repositories.NewEmployeesRepository(dbConnection)
 	supplierRepo := repositories.NewSupplierRepository(dbConnection)
-	productRepo := repositories.NewProductRepository(dbConnection)
+	productRepo := repositories.NewProdutoRepository(dbConnection)
 
-	clientsController := Controllers.NewClientsController(&ClientsRepo)
-	petsController := Controllers.NewPetsController(&petsRepo)
-	servicesController := Controllers.NewServicesController(&servicesRepo)
-	categoryController := Controllers.NewCategoryController(&categoryRepo)
+	clientsController := Controllers.NewClientsController(ClientsRepo)
+	petsController := Controllers.NewPetsController(petsRepo)
+	servicesController := Controllers.NewServicesController(servicesRepo)
+	categoryController := Controllers.NewCategoriaController(categoryRepo)
 	employeeController := Controllers.NewEmployeeController(employeeRepo)
-	supplierController := Controllers.NewSuppliersController(&supplierRepo)
-	productController := Controllers.NewProductController(&productRepo)
+	supplierController := Controllers.NewSuppliersController(supplierRepo)
+	productController := Controllers.NewProductController(productRepo)
 
 	supplier := server.Group("/suppliers")
 	{
@@ -65,8 +65,8 @@ func main() {
 
 	category := server.Group("/category")
 	{
-		category.GET("/", categoryController.GetCategorys)
-		category.GET("/:id", categoryController.Get)
+		// category.GET("/", categoryController.GetCategorys)
+		// category.GET("/:id", categoryController.Get)
 		category.POST("/", categoryController.Create)
 		category.PUT("/:id", categoryController.Update)
 		category.DELETE("/:id", categoryController.Delete)
@@ -74,7 +74,7 @@ func main() {
 
 	services := server.Group("/services")
 	{
-		services.GET("/", servicesController.GetServices)
+		// services.GET("/", servicesController.GetServices)
 		services.GET("/:id", servicesController.GetService)
 		services.POST("/", servicesController.CreateServices)
 		services.PUT("/:id", servicesController.UpdateService)
@@ -83,7 +83,7 @@ func main() {
 
 	pets := server.Group("/pets")
 	{
-		pets.GET("/", petsController.GetPets)
+		// pets.GET("/", petsController.GetPets)
 		pets.POST("/", petsController.CreatePets)
 		pets.PUT("/:id", petsController.UpdatePet)
 		pets.DELETE("/:id", petsController.DeletePet)
@@ -91,7 +91,7 @@ func main() {
 	}
 	product := server.Group("/products")
 	{
-		product.GET("/", productController.GetAllProducts)
+		// product.GET("/", productController.GetAllProducts)
 		product.POST("/", productController.CreateProduct)
 		product.PUT("/:id", productController.UpdateProduct)
 		product.DELETE("/:id", productController.DeleteProduct)
