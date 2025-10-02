@@ -17,7 +17,7 @@ type ContaBancarias struct {
 	Ativo        bool    `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa       Empresa                 `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa       Empresas                `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Movimentacoes []MovimentacaoBancarias `gorm:"foreignKey:ContaBancariaID" json:"movimentacoes,omitempty"`
 }
 
@@ -55,6 +55,6 @@ type FechamentoCaixas struct {
 	Status         string    `gorm:"size:20;default:'aberto'" json:"status"`
 
 	// Relacionamentos
-	Empresa Empresa  `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa Empresas `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Usuario Usuarios `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

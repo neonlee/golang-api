@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Prontuario struct {
+type Prontuarios struct {
 	ID            uint      `gorm:"primaryKey" json:"id"`
 	PetID         uint      `gorm:"not null;index" json:"pet_id"`
 	VeterinarioID uint      `gorm:"not null;index" json:"veterinario_id"`
@@ -32,7 +32,7 @@ type PrescricaoMedica struct {
 }
 
 // Estrutura para vacinas
-type Vacina struct {
+type Vacinas struct {
 	ID            uint      `gorm:"primaryKey" json:"id"`
 	PetID         uint      `gorm:"not null;index" json:"pet_id"`
 	Nome          string    `gorm:"size:100;not null" json:"nome"`

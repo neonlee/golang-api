@@ -22,6 +22,6 @@ type LogSistema struct {
 	CreatedAt       time.Time `json:"created_at"`
 
 	// Relacionamentos
-	Empresa *Empresa  `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa *Empresas `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Usuario *Usuarios `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

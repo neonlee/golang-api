@@ -11,5 +11,5 @@ type UsuarioResponse struct {
 	Cargo     string          `json:"cargo"`
 	EmpresaID uint            `json:"empresa_id"`
 	Empresa   string          `json:"empresa"`
-	Perfis    []models.Perfil `json:"perfis"`
+	Perfis    []models.Perfis `json:"perfis"`
 }

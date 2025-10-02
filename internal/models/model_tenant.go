@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Empresa struct {
+type Empresas struct {
 	ID             uint           `gorm:"primaryKey" json:"id"`
 	NomeFantasia   string         `gorm:"size:100;not null" json:"nome_fantasia"`
 	RazaoSocial    string         `gorm:"size:100" json:"razao_social"`
@@ -26,11 +26,11 @@ type Empresa struct {
 	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 
 	// Relacionamentos
-	Plano    Plano      `gorm:"foreignKey:PlanoID" json:"plano,omitempty"`
+	Plano    Planos     `gorm:"foreignKey:PlanoID" json:"plano,omitempty"`
 	Usuarios []Usuarios `gorm:"foreignKey:EmpresaID" json:"usuarios,omitempty"`
 }
 
-type Plano struct {
+type Planos struct {
 	ID                 uint    `gorm:"primaryKey" json:"id"`
 	Nome               string  `gorm:"size:50;not null" json:"nome"`
 	Descricao          string  `gorm:"type:text" json:"descricao"`
@@ -40,7 +40,7 @@ type Plano struct {
 	LimiteEmpresas     int     `gorm:"default:1" json:"limite_empresas"`
 	Ativo              bool    `gorm:"default:true" json:"ativo"`
 
-	Empresas []Empresa `gorm:"foreignKey:PlanoID" json:"empresas,omitempty"`
+	Empresas []Empresas `gorm:"foreignKey:PlanoID" json:"empresas,omitempty"`
 }
 
 // JSON type para campos JSONB

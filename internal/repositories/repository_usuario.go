@@ -130,11 +130,11 @@ func (r *usuarioRepository) GetWithPerfis(id uint) (*responses.UsuarioResponse, 
 	// Converter para response
 	response := &responses.UsuarioResponse{
 		Usuario: usuario,
-		Perfis:  make([]models.Perfil, 0),
+		Perfis:  make([]models.Perfis, 0),
 	}
 
 	// Extrair perfis únicos
-	perfisMap := make(map[uint]models.Perfil)
+	perfisMap := make(map[uint]models.Perfis)
 	for _, usuarioPerfil := range usuario.UsuarioPerfis {
 		perfisMap[usuarioPerfil.PerfilID] = usuarioPerfil.Perfil
 	}
@@ -149,13 +149,13 @@ func (r *usuarioRepository) GetWithPerfis(id uint) (*responses.UsuarioResponse, 
 func (r *usuarioRepository) AssignPerfis(usuarioID uint, perfisIDs []uint) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Remover perfis atuais
-		if err := tx.Where("usuario_id = ?", usuarioID).Delete(&models.UsuarioPerfil{}).Error; err != nil {
+		if err := tx.Where("usuario_id = ?", usuarioID).Delete(&models.UsuarioPerfis{}).Error; err != nil {
 			return err
 		}
 
 		// Adicionar novos perfis
 		for _, perfilID := range perfisIDs {
-			usuarioPerfil := models.UsuarioPerfil{
+			usuarioPerfil := models.UsuarioPerfis{
 				UsuarioID: usuarioID,
 				PerfilID:  perfilID,
 				CreatedAt: time.Now(),

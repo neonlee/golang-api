@@ -20,7 +20,7 @@ type Compras struct {
 	UsuarioID        uint      `gorm:"not null;index" json:"usuario_id"`
 
 	// Relacionamentos
-	Empresa    Empresa       `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa    Empresas      `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Fornecedor Fornecedores  `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	Usuario    Usuarios      `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 	Itens      []CompraItens `gorm:"foreignKey:CompraID" json:"itens,omitempty"`
@@ -76,7 +76,7 @@ type ContaPagar struct {
 	UsuarioID          uint       `gorm:"not null;index" json:"usuario_id"`
 
 	// Relacionamentos
-	Empresa          Empresa          `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa          Empresas         `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Fornecedor       Fornecedores     `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	CategoriaDespesa CategoriaDespesa `gorm:"foreignKey:CategoriaDespesaID" json:"categoria_despesa,omitempty"`
 	Usuario          Usuarios         `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
@@ -91,6 +91,6 @@ type CategoriaDespesa struct {
 	Ativo     bool   `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa     Empresa      `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa     Empresas     `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	ContasPagar []ContaPagar `gorm:"foreignKey:CategoriaDespesaID" json:"contas_pagar,omitempty"`
 }

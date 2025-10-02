@@ -18,13 +18,13 @@ type Usuarios struct {
 	UltimoLogin *time.Time `json:"ultimo_login"`
 
 	// Relacionamentos
-	Empresa       Empresa               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	UsuarioPerfis []UsuarioPerfil       `gorm:"foreignKey:UsuarioID" json:"usuario_perfis,omitempty"`
+	Empresa       Empresas              `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	UsuarioPerfis []UsuarioPerfis       `gorm:"foreignKey:UsuarioID" json:"usuario_perfis,omitempty"`
 	Vendas        []Vendas              `gorm:"foreignKey:UsuarioID" json:"vendas,omitempty"`
 	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:UsuarioID" json:"movimentacoes,omitempty"`
 }
 
-type Perfil struct {
+type Perfis struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	EmpresaID uint   `gorm:"not null;index" json:"empresa_id"`
 	Nome      string `gorm:"size:50;not null" json:"nome"`
@@ -32,9 +32,9 @@ type Perfil struct {
 	IsAdmin   bool   `gorm:"default:false" json:"is_admin"`
 
 	// Relacionamentos
-	Empresa       Empresa         `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa       Empresas        `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Permissoes    []Permissoes    `gorm:"foreignKey:PerfilID" json:"permissoes,omitempty"`
-	UsuarioPerfis []UsuarioPerfil `gorm:"foreignKey:PerfilID" json:"usuario_perfis,omitempty"`
+	UsuarioPerfis []UsuarioPerfis `gorm:"foreignKey:PerfilID" json:"usuario_perfis,omitempty"`
 }
 
 type Permissoes struct {
@@ -47,18 +47,18 @@ type Permissoes struct {
 	PodeGerarRelatorio bool `gorm:"default:false" json:"pode_gerar_relatorio"`
 
 	// Relacionamentos
-	Perfil Perfil `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
+	Perfil Perfis `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
 	Modulo Modulo `gorm:"foreignKey:ModuloID" json:"modulo,omitempty"`
 }
 
-type UsuarioPerfil struct {
+type UsuarioPerfis struct {
 	UsuarioID uint      `gorm:"primaryKey" json:"usuario_id"`
 	PerfilID  uint      `gorm:"primaryKey" json:"perfil_id"`
 	CreatedAt time.Time `json:"created_at"`
 
 	// Relacionamentos
 	Usuario Usuarios `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
-	Perfil  Perfil   `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
+	Perfil  Perfis   `gorm:"foreignKey:PerfilID" json:"perfil,omitempty"`
 }
 
 type Modulo struct {

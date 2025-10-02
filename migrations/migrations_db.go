@@ -21,7 +21,7 @@ func NewMigrationsDB(db *gorm.DB) *MigrationsDB {
 func (r *MigrationsDB) RunMigrations() error {
 	return r.connection.AutoMigrate(
 		// models SEM soft delete
-		&models.Empresa{},
+		&models.Empresas{},
 		&models.Usuarios{},
 		&models.Clientes{},
 		&models.Pets{},
@@ -35,8 +35,8 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.ContaReceber{},
 		&models.ContaPagar{},
 		&models.CategoriaDespesa{},
-		&models.Prontuario{},
-		&models.Vacina{},
+		&models.Prontuarios{},
+		&models.Vacinas{},
 		&models.Compras{},
 		&models.CompraItens{},
 

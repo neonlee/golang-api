@@ -13,7 +13,7 @@ type CategoriaProdutos struct {
 	Ativo     bool   `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa  Empresa    `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa  Empresas   `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Produtos []Produtos `gorm:"foreignKey:CategoriaID" json:"produtos,omitempty"`
 }
 
@@ -29,7 +29,7 @@ type Fornecedores struct {
 	Ativo        bool   `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa  Empresa    `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa  Empresas   `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Produtos []Produtos `gorm:"foreignKey:FornecedorID" json:"produtos,omitempty"`
 	Compras  []Compras  `gorm:"foreignKey:FornecedorID" json:"compras,omitempty"`
 }
@@ -53,7 +53,7 @@ type Produtos struct {
 	Ativo            bool    `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa       Empresa               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa       Empresas              `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Categoria     CategoriaProdutos     `gorm:"foreignKey:CategoriaID" json:"categoria,omitempty"`
 	Fornecedor    Fornecedores          `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:ProdutoID" json:"movimentacoes,omitempty"`

@@ -7,15 +7,15 @@ import (
 )
 
 type ProntuarioRepository interface {
-	Create(prontuario *models.Prontuario) error
-	GetByID(id uint) (*models.Prontuario, error)
-	Update(prontuario *models.Prontuario) error
-	GetByPet(petID uint) ([]models.Prontuario, error)
-	GetByVeterinario(veterinarioID uint, inicio, fim string) ([]models.Prontuario, error)
-	GetUltimoProntuario(petID uint) (*models.Prontuario, error)
-	RegistrarVacina(vacina *models.Vacina) error
-	GetVacinasPorPet(petID uint) ([]models.Vacina, error)
-	GetVacinasVencidas(empresaID uint) ([]models.Vacina, error)
+	Create(prontuario *models.Prontuarios) error
+	GetByID(id uint) (*models.Prontuarios, error)
+	Update(prontuario *models.Prontuarios) error
+	GetByPet(petID uint) ([]models.Prontuarios, error)
+	GetByVeterinario(veterinarioID uint, inicio, fim string) ([]models.Prontuarios, error)
+	GetUltimoProntuario(petID uint) (*models.Prontuarios, error)
+	RegistrarVacina(vacina *models.Vacinas) error
+	GetVacinasPorPet(petID uint) ([]models.Vacinas, error)
+	GetVacinasVencidas(empresaID uint) ([]models.Vacinas, error)
 }
 type prontuarioRepository struct {
 	db *gorm.DB
@@ -25,12 +25,12 @@ func NewProntuarioRepository(db *gorm.DB) ProntuarioRepository {
 	return &prontuarioRepository{db: db}
 }
 
-func (r *prontuarioRepository) Create(prontuario *models.Prontuario) error {
+func (r *prontuarioRepository) Create(prontuario *models.Prontuarios) error {
 	return r.db.Create(prontuario).Error
 }
 
-func (r *prontuarioRepository) GetByID(id uint) (*models.Prontuario, error) {
-	var prontuario models.Prontuario
+func (r *prontuarioRepository) GetByID(id uint) (*models.Prontuarios, error) {
+	var prontuario models.Prontuarios
 	err := r.db.
 		Preload("Pet").
 		Preload("Pet.Clientes").
@@ -40,12 +40,12 @@ func (r *prontuarioRepository) GetByID(id uint) (*models.Prontuario, error) {
 	return &prontuario, err
 }
 
-func (r *prontuarioRepository) Update(prontuario *models.Prontuario) error {
+func (r *prontuarioRepository) Update(prontuario *models.Prontuarios) error {
 	return r.db.Save(prontuario).Error
 }
 
-func (r *prontuarioRepository) GetByPet(petID uint) ([]models.Prontuario, error) {
-	var prontuarios []models.Prontuario
+func (r *prontuarioRepository) GetByPet(petID uint) ([]models.Prontuarios, error) {
+	var prontuarios []models.Prontuarios
 
 	err := r.db.
 		Where("pet_id = ?", petID).
@@ -56,8 +56,8 @@ func (r *prontuarioRepository) GetByPet(petID uint) ([]models.Prontuario, error)
 	return prontuarios, err
 }
 
-func (r *prontuarioRepository) GetByVeterinario(veterinarioID uint, inicio, fim string) ([]models.Prontuario, error) {
-	var prontuarios []models.Prontuario
+func (r *prontuarioRepository) GetByVeterinario(veterinarioID uint, inicio, fim string) ([]models.Prontuarios, error) {
+	var prontuarios []models.Prontuarios
 
 	err := r.db.
 		Where("veterinario_id = ? AND DATE(data_consulta) BETWEEN ? AND ?",
@@ -70,8 +70,8 @@ func (r *prontuarioRepository) GetByVeterinario(veterinarioID uint, inicio, fim 
 	return prontuarios, err
 }
 
-func (r *prontuarioRepository) GetUltimoProntuario(petID uint) (*models.Prontuario, error) {
-	var prontuario models.Prontuario
+func (r *prontuarioRepository) GetUltimoProntuario(petID uint) (*models.Prontuarios, error) {
+	var prontuario models.Prontuarios
 
 	err := r.db.
 		Where("pet_id = ?", petID).
@@ -82,12 +82,12 @@ func (r *prontuarioRepository) GetUltimoProntuario(petID uint) (*models.Prontuar
 	return &prontuario, err
 }
 
-func (r *prontuarioRepository) RegistrarVacina(vacina *models.Vacina) error {
+func (r *prontuarioRepository) RegistrarVacina(vacina *models.Vacinas) error {
 	return r.db.Create(vacina).Error
 }
 
-func (r *prontuarioRepository) GetVacinasPorPet(petID uint) ([]models.Vacina, error) {
-	var vacinas []models.Vacina
+func (r *prontuarioRepository) GetVacinasPorPet(petID uint) ([]models.Vacinas, error) {
+	var vacinas []models.Vacinas
 
 	err := r.db.
 		Where("pet_id = ?", petID).
@@ -98,8 +98,8 @@ func (r *prontuarioRepository) GetVacinasPorPet(petID uint) ([]models.Vacina, er
 	return vacinas, err
 }
 
-func (r *prontuarioRepository) GetVacinasVencidas(empresaID uint) ([]models.Vacina, error) {
-	var vacinas []models.Vacina
+func (r *prontuarioRepository) GetVacinasVencidas(empresaID uint) ([]models.Vacinas, error) {
+	var vacinas []models.Vacinas
 
 	// Subquery para buscar pets da empresa
 	subquery := r.db.Model(&models.Pets{}).

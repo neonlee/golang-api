@@ -19,6 +19,10 @@ type ProdutoRepository interface {
 	GetProdutosBaixoEstoque(empresaID uint) ([]models.Produtos, error)
 	UpdateEstoque(produtoID uint, quantidade int) error
 	GetProdutoComEstoque(id uint) (*models.Produtos, error)
+	GetProdutosProximosVencimento(id uint) ([]models.Produtos, error)
+	GetProdutosVencimentoHoje(id uint) ([]models.Produtos, error)
+	GetProdutosSemEstoque(id uint) ([]models.Produtos, error)
+	GetProdutosVencidos(id uint) ([]models.Produtos, error)
 }
 
 type produtoRepository struct {
@@ -169,4 +173,53 @@ func (r *produtoRepository) GetProdutoComEstoque(id uint) (*models.Produtos, err
 		First(&produto, id).Error
 
 	return &produto, err
+}
+
+// GetProdutosProximosVencimento implements ProdutoRepository.
+func (r *produtoRepository) GetProdutosProximosVencimento(id uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
+	err := r.db.
+		Where("empresa_id = ? AND data_validade IS NOT NULL AND data_validade > NOW() AND data_validade <= NOW() + INTERVAL '7 days'", id).
+		Preload("Categoria").
+		Preload("Fornecedor").
+		Order("data_validade ASC").
+		Find(&produtos).Error
+	return produtos, err
+}
+
+// GetProdutosSemEstoque implements ProdutoRepository.
+func (r *produtoRepository) GetProdutosSemEstoque(id uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
+	err := r.db.
+		Joins("LEFT JOIN (SELECT produto_id, quantidade_atual FROM movimentacao_estoque WHERE id IN (SELECT MAX(id) FROM movimentacao_estoque GROUP BY produto_id)) AS estoque ON produtos.id = estoque.produto_id").
+		Where("produtos.empresa_id = ? AND (estoque.quantidade_atual IS NULL OR estoque.quantidade_atual <= 0)", id).
+		Preload("Categoria").
+		Preload("Fornecedor").
+		Order("produtos.nome ASC").
+		Find(&produtos).Error
+	return produtos, err
+}
+
+// GetProdutosVencidos implements ProdutoRepository.
+func (r *produtoRepository) GetProdutosVencidos(id uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
+	err := r.db.
+		Where("empresa_id = ? AND data_validade IS NOT NULL AND data_validade < NOW()", id).
+		Preload("Categoria").
+		Preload("Fornecedor").
+		Order("data_validade ASC").
+		Find(&produtos).Error
+	return produtos, err
+}
+
+// GetProdutosVencimentoHoje implements ProdutoRepository.
+func (r *produtoRepository) GetProdutosVencimentoHoje(id uint) ([]models.Produtos, error) {
+	var produtos []models.Produtos
+	err := r.db.
+		Where("empresa_id = ? AND data_validade IS NOT NULL AND data_validade = CURRENT_DATE", id).
+		Preload("Categoria").
+		Preload("Fornecedor").
+		Order("data_validade ASC").
+		Find(&produtos).Error
+	return produtos, err
 }

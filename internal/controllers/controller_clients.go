@@ -214,3 +214,24 @@ func (p *ControllersClientes) GetNewClients(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, result)
 }
+
+func (p *ControllersClientes) ListByEmpresa(ctx *gin.Context) {
+	id := ctx.Param("EmpresaID")
+
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	var filter = requests.ClientesFilter{}
+	if err := ctx.BindJSON(&filter); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
+		return
+	}
+	result, err := p.repository.ListByEmpresa(uint(user), filter)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
+	ctx.JSON(http.StatusOK, result)
+}

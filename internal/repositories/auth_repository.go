@@ -68,7 +68,7 @@ func (r *authRepository) Login(req requests.LoginRequest) (*responses.LoginRespo
 	}
 
 	// Buscar empresa
-	var empresa models.Empresa
+	var empresa models.Empresas
 	if err := r.db.First(&empresa, req.EmpresaID).Error; err != nil {
 		return nil, errors.New("empresa não encontrada")
 	}
@@ -142,12 +142,12 @@ func (r *authRepository) getUsuarioPermissoes(usuarioID uint) ([]string, error) 
 	var permissoes []string
 	err := r.db.
 		Model(&models.Permissoes{}).
-		Joins("JOIN usuario_perfis ON permissoes.perfil_id = usuario_perfis.perfil_id").
+		Select("DISTINCT modulos.nome").
+		Joins("JOIN usuario_perfis ON permissoes.id = usuario_perfis.perfil_id").
 		Joins("JOIN modulos ON permissoes.modulo_id = modulos.id").
 		Where("usuario_perfis.usuario_id = ?", usuarioID).
 		Where("permissoes.pode_visualizar = ?", true).
-		Distinct("modulos.nome").
-		Find(&permissoes).Error
+		Pluck("modulos.nome", &permissoes).Error
 
 	return permissoes, err
 }

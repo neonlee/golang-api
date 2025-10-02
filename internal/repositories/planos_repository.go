@@ -8,11 +8,11 @@ import (
 
 // PerfilRepository interface
 type PlanoRepository interface {
-	Create(plano *models.Plano) error
-	GetByID(id uint) (*models.Plano, error)
-	Update(plano *models.Plano) error
-	ListAll() ([]models.Plano, error)
-	GetByNome(nome string) (*models.Plano, error)
+	Create(plano *models.Planos) error
+	GetByID(id uint) (*models.Planos, error)
+	Update(plano *models.Planos) error
+	ListAll() ([]models.Planos, error)
+	GetByNome(nome string) (*models.Planos, error)
 }
 
 type planoRepository struct {
@@ -23,27 +23,27 @@ func NewPlanoRepository(db *gorm.DB) PlanoRepository {
 	return &planoRepository{db: db}
 }
 
-func (r *planoRepository) Create(plano *models.Plano) error {
+func (r *planoRepository) Create(plano *models.Planos) error {
 	return r.db.Create(plano).Error
 }
 
-func (r *planoRepository) GetByID(id uint) (*models.Plano, error) {
-	var plano models.Plano
+func (r *planoRepository) GetByID(id uint) (*models.Planos, error) {
+	var plano models.Planos
 	err := r.db.First(&plano, id).Error
 	return &plano, err
 }
 
-func (r *planoRepository) Update(plano *models.Plano) error {
+func (r *planoRepository) Update(plano *models.Planos) error {
 	return r.db.Save(plano).Error
 }
 
-func (r *planoRepository) ListAll() ([]models.Plano, error) {
-	var planos []models.Plano
+func (r *planoRepository) ListAll() ([]models.Planos, error) {
+	var planos []models.Planos
 	err := r.db.Find(&planos).Error
 	return planos, err
 }
-func (r *planoRepository) GetByNome(nome string) (*models.Plano, error) {
-	var plano models.Plano
+func (r *planoRepository) GetByNome(nome string) (*models.Planos, error) {
+	var plano models.Planos
 	err := r.db.Where("nome = ?", nome).First(&plano).Error
 	return &plano, err
 }

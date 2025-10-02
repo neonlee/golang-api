@@ -19,5 +19,5 @@ type Pets struct {
 
 	// Relacionamentos
 	Agendamentos []Agendamento `gorm:"foreignKey:PetID" json:"agendamentos,omitempty"`
-	Prontuarios  []Prontuario  `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
+	Prontuarios  []Prontuarios `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
 }

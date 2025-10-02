@@ -24,7 +24,7 @@ type Vendas struct {
 	DeletedAt *time.Time `gorm:"index" json:"deleted_at,omitempty"`
 
 	// Relacionamentos
-	Empresa       Empresa        `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa       Empresas       `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Clientes      Clientes       `gorm:"foreignKey:ClientesID" json:"cliente,omitempty"`
 	Usuario       Usuarios       `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 	Itens         []VendaItem    `gorm:"foreignKey:VendaID" json:"itens,omitempty"`
@@ -58,7 +58,7 @@ type TipoServico struct {
 	Ativo          bool    `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Empresa      Empresa       `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa      Empresas      `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Agendamentos []Agendamento `gorm:"foreignKey:TipoServicoID" json:"agendamentos,omitempty"`
 	VendaItens   []VendaItem   `gorm:"foreignKey:TipoServicoID" json:"venda_itens,omitempty"`
 }
@@ -76,7 +76,7 @@ type Agendamento struct {
 	UsuarioID       uint      `gorm:"not null;index" json:"usuario_id"`
 
 	// Relacionamentos
-	Empresa     Empresa     `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Empresa     Empresas    `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Clientes    Clientes    `gorm:"foreignKey:ClientesID" json:"cliente,omitempty"`
 	Pet         Pets        `gorm:"foreignKey:PetID" json:"pet,omitempty"`
 	TipoServico TipoServico `gorm:"foreignKey:TipoServicoID" json:"tipo_servico,omitempty"`
