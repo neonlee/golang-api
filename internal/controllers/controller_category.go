@@ -41,7 +41,7 @@ func (c *CategoriaController) GetByID(ctx *gin.Context) {
 }
 
 func (c *CategoriaController) Create(ctx *gin.Context) {
-	var categoria models.CategoriaProdutos
+	var categoria models.CategoriasProdutos
 	if err := ctx.ShouldBindJSON(&categoria); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -59,7 +59,7 @@ func (c *CategoriaController) Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	var categoria models.CategoriaProdutos
+	var categoria models.CategoriasProdutos
 	if err := ctx.ShouldBindJSON(&categoria); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

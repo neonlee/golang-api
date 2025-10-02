@@ -26,7 +26,7 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.Clientes{},
 		&models.Pets{},
 		&models.Produtos{},
-		&models.CategoriaProdutos{},
+		&models.CategoriasProdutos{},
 		&models.Fornecedores{},
 		&models.Vendas{},
 		&models.VendaItem{},
