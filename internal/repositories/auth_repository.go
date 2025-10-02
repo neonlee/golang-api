@@ -18,7 +18,7 @@ type AuthRepository interface {
 	Login(req requests.LoginRequest) (*responses.LoginResponse, error)
 	GenerateToken(usuario models.Usuarios) (string, error)
 	ValidateToken(token string) (*models.Usuarios, error)
-	Logout(token string) error
+	Logout(token requests.LogoutRequest) error
 	RefreshToken(token string) (string, error)
 	GetUsuarioByEmailAndEmpresa(email string, empresaID uint) (*models.Usuarios, error)
 	checkPassword(hashedPassword, password string) bool
@@ -46,7 +46,6 @@ func (r *authRepository) Login(req requests.LoginRequest) (*responses.LoginRespo
 		return nil, errors.New("credenciais inválidas")
 	}
 
-	// Verificar senha
 	if !r.checkPassword(usuario.SenhaHash, req.Senha) {
 		return nil, errors.New("credenciais inválidas")
 	}
@@ -147,12 +146,13 @@ func (r *authRepository) getUsuarioPermissoes(usuarioID uint) ([]string, error) 
 		Joins("JOIN modulos ON permissoes.modulo_id = modulos.id").
 		Where("usuario_perfis.usuario_id = ?", usuarioID).
 		Where("permissoes.pode_visualizar = ?", true).
-		Pluck("DISTINCT modulos.nome", &permissoes).Error
+		Distinct("modulos.nome").
+		Find(&permissoes).Error
 
 	return permissoes, err
 }
 
-func (r *authRepository) Logout(token string) error {
+func (r *authRepository) Logout(token requests.LogoutRequest) error {
 	// Implementar blacklist de tokens se necessário
 	return nil
 }

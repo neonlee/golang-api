@@ -9,7 +9,7 @@ import (
 
 type EmployeesRepository interface {
 	Create(user models.Employees) (*models.Employees, error)
-	GetEmployeess() (*[]models.Employees, error)
+	GetAllEmployees() (*[]models.Employees, error)
 	GetEmployees(id int) (*models.Employees, error)
 	UpdateEmployees(id int, cliente models.Employees) (*models.Employees, error)
 	DeleteEmployees(id int) (bool, error)
@@ -38,7 +38,7 @@ func (r *employeeRepository) Create(employee models.Employees) (*models.Employee
 	return &employee, nil
 }
 
-func (r *employeeRepository) GetEmployeess() (*[]models.Employees, error) {
+func (r *employeeRepository) GetAllEmployees() (*[]models.Employees, error) {
 	var clientes []models.Employees
 
 	err := r.db.

@@ -5,6 +5,7 @@ import (
 	"petApi/internal/repositories"
 	"petApi/migrations"
 	"petApi/pkg/database"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -28,6 +29,7 @@ func main() {
 	employeeRepo := repositories.NewEmployeesRepository(dbConnection)
 	supplierRepo := repositories.NewSupplierRepository(dbConnection)
 	productRepo := repositories.NewProdutoRepository(dbConnection)
+	authRepo := repositories.NewAuthRepository(dbConnection, "token", time.Hour*24)
 
 	clientsController := Controllers.NewClientsController(ClientsRepo)
 	petsController := Controllers.NewPetsController(petsRepo)
@@ -36,6 +38,8 @@ func main() {
 	employeeController := Controllers.NewEmployeeController(employeeRepo)
 	supplierController := Controllers.NewSuppliersController(supplierRepo)
 	productController := Controllers.NewProductController(productRepo)
+	authController := Controllers.NewAuthController(authRepo)
+	server.POST("/auth/login", authController.Login)
 
 	supplier := server.Group("/suppliers")
 	{

@@ -9,26 +9,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type CompraRepository interface {
-	Create(compra *models.Compra, itens []models.CompraItem) error
-	GetByID(id uint) (*models.Compra, error)
-	Update(compra *models.Compra) error
+type ComprasRepository interface {
+	Create(compra *models.Compras, itens []models.CompraItens) error
+	GetByID(id uint) (*models.Compras, error)
+	Update(compra *models.Compras) error
 	Cancelar(id uint, motivo string) error
-	ListByEmpresa(empresaID uint, filters requests.CompraFilter) ([]models.Compra, error)
-	ListByFornecedor(fornecedorID uint) ([]models.Compra, error)
-	GetComprasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Compra, error)
-	GetResumoCompras(empresaID uint, periodo string) (*responses.ResumoCompras, error)
+	ListByEmpresa(empresaID uint, filters requests.CompraFilter) ([]models.Compras, error)
+	ListByFornecedor(fornecedorID uint) ([]models.Compras, error)
+	GetComprassPorPeriodo(empresaID uint, inicio, fim string) ([]models.Compras, error)
+	GetResumoComprass(empresaID uint, periodo string) (*responses.ResumoCompras, error)
 }
 
 type compraRepository struct {
 	db *gorm.DB
 }
 
-func NewCompraRepository(db *gorm.DB) CompraRepository {
+func NewComprasRepository(db *gorm.DB) ComprasRepository {
 	return &compraRepository{db: db}
 }
 
-func (r *compraRepository) Create(compra *models.Compra, itens []models.CompraItem) error {
+func (r *compraRepository) Create(compra *models.Compras, itens []models.CompraItens) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Criar a compra
 		if err := tx.Create(compra).Error; err != nil {
@@ -47,7 +47,7 @@ func (r *compraRepository) Create(compra *models.Compra, itens []models.CompraIt
 				ProdutoID:        itens[i].ProdutoID,
 				TipoMovimentacao: "entrada",
 				Quantidade:       itens[i].Quantidade,
-				Motivo:           "Compra #" + strconv.FormatUint(uint64(compra.ID), 10),
+				Motivo:           "Compras #" + strconv.FormatUint(uint64(compra.ID), 10),
 				UsuarioID:        compra.UsuarioID,
 			}
 			if err := tx.Create(&movimentacao).Error; err != nil {
@@ -59,8 +59,8 @@ func (r *compraRepository) Create(compra *models.Compra, itens []models.CompraIt
 	})
 }
 
-func (r *compraRepository) GetByID(id uint) (*models.Compra, error) {
-	var compra models.Compra
+func (r *compraRepository) GetByID(id uint) (*models.Compras, error) {
+	var compra models.Compras
 	err := r.db.
 		Preload("Fornecedor").
 		Preload("Usuario").
@@ -71,12 +71,12 @@ func (r *compraRepository) GetByID(id uint) (*models.Compra, error) {
 	return &compra, err
 }
 
-func (r *compraRepository) Update(compra *models.Compra) error {
+func (r *compraRepository) Update(compra *models.Compras) error {
 	return r.db.Save(compra).Error
 }
 
 func (r *compraRepository) Cancelar(id uint, motivo string) error {
-	return r.db.Model(&models.Compra{}).
+	return r.db.Model(&models.Compras{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{
 			"status":      "cancelado",
@@ -84,8 +84,8 @@ func (r *compraRepository) Cancelar(id uint, motivo string) error {
 		}).Error
 }
 
-func (r *compraRepository) ListByEmpresa(empresaID uint, filters requests.CompraFilter) ([]models.Compra, error) {
-	var compras []models.Compra
+func (r *compraRepository) ListByEmpresa(empresaID uint, filters requests.CompraFilter) ([]models.Compras, error) {
+	var compras []models.Compras
 
 	query := r.db.Where("empresa_id = ?", empresaID)
 
@@ -110,8 +110,8 @@ func (r *compraRepository) ListByEmpresa(empresaID uint, filters requests.Compra
 	return compras, err
 }
 
-func (r *compraRepository) ListByFornecedor(fornecedorID uint) ([]models.Compra, error) {
-	var compras []models.Compra
+func (r *compraRepository) ListByFornecedor(fornecedorID uint) ([]models.Compras, error) {
+	var compras []models.Compras
 
 	err := r.db.
 		Where("fornecedor_id = ?", fornecedorID).
@@ -123,8 +123,8 @@ func (r *compraRepository) ListByFornecedor(fornecedorID uint) ([]models.Compra,
 	return compras, err
 }
 
-func (r *compraRepository) GetComprasPorPeriodo(empresaID uint, inicio, fim string) ([]models.Compra, error) {
-	var compras []models.Compra
+func (r *compraRepository) GetComprassPorPeriodo(empresaID uint, inicio, fim string) ([]models.Compras, error) {
+	var compras []models.Compras
 
 	err := r.db.
 		Where("empresa_id = ? AND DATE(data_compra) BETWEEN ? AND ?", empresaID, inicio, fim).
@@ -137,7 +137,7 @@ func (r *compraRepository) GetComprasPorPeriodo(empresaID uint, inicio, fim stri
 	return compras, err
 }
 
-func (r *compraRepository) GetResumoCompras(empresaID uint, periodo string) (*responses.ResumoCompras, error) {
+func (r *compraRepository) GetResumoComprass(empresaID uint, periodo string) (*responses.ResumoCompras, error) {
 	var resumo responses.ResumoCompras
 
 	// Implementar lógica de resumo por período

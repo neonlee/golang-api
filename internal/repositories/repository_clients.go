@@ -15,8 +15,8 @@ type ClientesRepository interface {
 	ListByEmpresa(empresaID uint, filters requests.ClientesFilter) ([]models.Clientes, error)
 	Search(empresaID uint, termo string) ([]models.Clientes, error)
 	GetWithPets(id uint) (*models.Clientes, error)
-	GetTotalClientess(empresaID uint) (int64, error)
-	GetClientessNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error)
+	GetTotalClientes(empresaID uint) (int64, error)
+	GetClientesNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error)
 }
 
 type clienteRepository struct {
@@ -89,13 +89,13 @@ func (r *clienteRepository) GetWithPets(id uint) (*models.Clientes, error) {
 	return &cliente, err
 }
 
-func (r *clienteRepository) GetTotalClientess(empresaID uint) (int64, error) {
+func (r *clienteRepository) GetTotalClientes(empresaID uint) (int64, error) {
 	var count int64
 	err := r.db.Model(&models.Clientes{}).Where("empresa_id = ?", empresaID).Count(&count).Error
 	return count, err
 }
 
-func (r *clienteRepository) GetClientessNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error) {
+func (r *clienteRepository) GetClientesNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error) {
 	var clientes []models.Clientes
 
 	err := r.db.

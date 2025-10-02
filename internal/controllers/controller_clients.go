@@ -10,12 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllersClientess struct {
+type ControllersClientes struct {
 	repository repositories.ClientesRepository
 }
 
-func NewClientsController(connection repositories.ClientesRepository) *ControllersClientess {
-	return &ControllersClientess{repository: connection}
+func NewClientsController(connection repositories.ClientesRepository) *ControllersClientes {
+	return &ControllersClientes{repository: connection}
 }
 
 // UpdateClient godoc
@@ -28,7 +28,7 @@ func NewClientsController(connection repositories.ClientesRepository) *Controlle
 //	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-func (p *ControllersClientess) UpdateClient(ctx *gin.Context) {
+func (p *ControllersClientes) UpdateClient(ctx *gin.Context) {
 
 	var cliente models.Clientes
 	if err := ctx.BindJSON(&cliente); err != nil {
@@ -54,7 +54,7 @@ func (p *ControllersClientess) UpdateClient(ctx *gin.Context) {
 //	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client/:id [get]
-func (p *ControllersClientess) GetClient(ctx *gin.Context) {
+func (p *ControllersClientes) GetClient(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := strconv.Atoi(id)
@@ -81,14 +81,20 @@ func (p *ControllersClientess) GetClient(ctx *gin.Context) {
 //	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-func (p *ControllersClientess) GetClients(ctx *gin.Context) {
+func (p *ControllersClientes) GetClients(ctx *gin.Context) {
+	id := ctx.Param("id")
 
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
 	var filter = requests.ClientesFilter{}
 	if err := ctx.BindJSON(&filter); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	result, err := p.repository.ListByEmpresa(uint(1), filter)
+	result, err := p.repository.ListByEmpresa(uint(user), filter)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -107,7 +113,7 @@ func (p *ControllersClientess) GetClients(ctx *gin.Context) {
 //	@Success		200	{array}		models.Client
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
-func (p *ControllersClientess) CreateClients(ctx *gin.Context) {
+func (p *ControllersClientes) CreateClients(ctx *gin.Context) {
 	var client models.Clientes
 	err := ctx.BindJSON(&client)
 	if err != nil {
@@ -133,7 +139,7 @@ func (p *ControllersClientess) CreateClients(ctx *gin.Context) {
 //	@Success		200	{array}		bool
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
-func (p *ControllersClientess) DeleteClient(ctx *gin.Context) {
+func (p *ControllersClientes) DeleteClient(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	user, err := strconv.Atoi(id)
@@ -148,4 +154,63 @@ func (p *ControllersClientess) DeleteClient(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"deleted": true})
+}
+
+func (p *ControllersClientes) SearchClients(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	termo := ctx.Query("termo")
+	result, err := p.repository.Search(uint(user), termo)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (p *ControllersClientes) GetTotalClients(ctx *gin.Context) {
+	id := ctx.Param("EmpresaID")
+
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	total, err := p.repository.GetTotalClientes(uint(user))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
+	ctx.JSON(http.StatusOK, gin.H{"total": total})
+}
+
+func (p *ControllersClientes) GetNewClients(ctx *gin.Context) {
+	mesStr := ctx.Query("mes")
+	anoStr := ctx.Query("ano")
+	mes, err := strconv.Atoi(mesStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "Mês inválido"})
+		return
+	}
+	ano, err := strconv.Atoi(anoStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "Ano inválido"})
+		return
+	}
+	id := ctx.Param("EmpresaID")
+
+	user, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	result, err := p.repository.GetClientesNovos(uint(user), mes, ano)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
+	ctx.JSON(http.StatusOK, result)
 }

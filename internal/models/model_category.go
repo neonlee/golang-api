@@ -16,7 +16,7 @@ const (
 	CategoriaTipoExame         CategoriaTipo = "exame"
 )
 
-type Categoryd struct {
+type Categorys struct {
 	PetshopId int           `gorm:"column:petshop_id" json:"petshop_id"`
 	Id        int           `gorm:"column:id;primaryKey" json:"id"`
 	Order     int           `gorm:"column:ordem" json:"order"`

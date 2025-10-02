@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Compra struct {
+type Compras struct {
 	ID               uint      `gorm:"primaryKey" json:"id"`
 	EmpresaID        uint      `gorm:"not null;index" json:"empresa_id"`
 	FornecedorID     uint      `gorm:"not null;index" json:"fornecedor_id"`
@@ -20,13 +20,13 @@ type Compra struct {
 	UsuarioID        uint      `gorm:"not null;index" json:"usuario_id"`
 
 	// Relacionamentos
-	Empresa    Empresa      `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Fornecedor Fornecedor   `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
-	Usuario    Usuarios     `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
-	Itens      []CompraItem `gorm:"foreignKey:CompraID" json:"itens,omitempty"`
+	Empresa    Empresa       `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	Fornecedor Fornecedores  `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
+	Usuario    Usuarios      `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
+	Itens      []CompraItens `gorm:"foreignKey:CompraID" json:"itens,omitempty"`
 }
 
-type CompraItem struct {
+type CompraItens struct {
 	ID            uint    `gorm:"primaryKey" json:"id"`
 	CompraID      uint    `gorm:"not null;index" json:"compra_id"`
 	ProdutoID     uint    `gorm:"not null;index" json:"produto_id"`
@@ -35,7 +35,7 @@ type CompraItem struct {
 	ValorTotal    float64 `gorm:"type:decimal(10,2)" json:"valor_total"`
 
 	// Relacionamentos
-	Compra  Compra   `gorm:"foreignKey:CompraID" json:"compra,omitempty"`
+	Compra  Compras  `gorm:"foreignKey:CompraID" json:"compra,omitempty"`
 	Produto Produtos `gorm:"foreignKey:ProdutoID" json:"produto,omitempty"`
 }
 
@@ -77,7 +77,7 @@ type ContaPagar struct {
 
 	// Relacionamentos
 	Empresa          Empresa          `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	Fornecedor       Fornecedor       `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
+	Fornecedor       Fornecedores     `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	CategoriaDespesa CategoriaDespesa `gorm:"foreignKey:CategoriaDespesaID" json:"categoria_despesa,omitempty"`
 	Usuario          Usuarios         `gorm:"foreignKey:UsuarioID" json:"usuario,omitempty"`
 }

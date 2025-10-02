@@ -10,10 +10,10 @@ import (
 )
 
 type ControllersSuppliers struct {
-	repository repositories.FornecedorRepository
+	repository repositories.FornecedoresRepository
 }
 
-func NewSuppliersController(connection repositories.FornecedorRepository) *ControllersSuppliers {
+func NewSuppliersController(connection repositories.FornecedoresRepository) *ControllersSuppliers {
 	return &ControllersSuppliers{repository: connection}
 }
 
@@ -29,18 +29,18 @@ func NewSuppliersController(connection repositories.FornecedorRepository) *Contr
 //	@Router			/clients [get]
 func (p *ControllersSuppliers) Update(ctx *gin.Context) {
 
-	var Fornecedor models.Fornecedor
-	if err := ctx.BindJSON(&Fornecedor); err != nil {
+	var Fornecedores models.Fornecedores
+	if err := ctx.BindJSON(&Fornecedores); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
-	err := p.repository.Update(&Fornecedor)
+	err := p.repository.Update(&Fornecedores)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, &Fornecedor)
+	ctx.JSON(http.StatusOK, &Fornecedores)
 }
 
 // Getclient godoc
@@ -101,7 +101,7 @@ func (p *ControllersSuppliers) GetSuppliers(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersSuppliers) Create(ctx *gin.Context) {
-	var client models.Fornecedor
+	var client models.Fornecedores
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

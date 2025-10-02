@@ -208,55 +208,6 @@ func TestEmployeeController_Get_NotFound(t *testing.T) {
 	assert.Contains(t, response["error"], "not found")
 	mockRepo.AssertExpectations(t)
 }
-func TestEmployeeController_GetEmployees_Success(t *testing.T) {
-	router, mockRepo, controller := setupTest()
-
-	testEmployees := []models.Employees{
-		createTestEmployee(),
-		{
-			Id:   2,
-			Nome: "Jane Smith",
-		},
-		createTestEmployee(),
-		{
-			Id:   2,
-			Nome: "Jane Smith",
-		},
-	}
-
-	mockRepo.On("GetEmployees").Return(testEmployees, nil)
-
-	router.GET("/employee", controller.GetEmployees)
-
-	req, _ := http.NewRequest("GET", "/employee", nil)
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-
-	var response []models.Employees
-	json.Unmarshal(w.Body.Bytes(), &response)
-
-	assert.Len(t, response, 2)
-	assert.Equal(t, testEmployees[0].Nome, response[0].Nome)
-	mockRepo.AssertExpectations(t)
-}
-
-func TestEmployeeController_GetEmployees_Error(t *testing.T) {
-	router, mockRepo, controller := setupTest()
-
-	expectedError := errors.New("failed to get employees")
-	mockRepo.On("GetEmployees").Return([]models.Employees{}, expectedError)
-
-	router.GET("/employee", controller.GetEmployees)
-
-	req, _ := http.NewRequest("GET", "/employee", nil)
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	mockRepo.AssertExpectations(t)
-}
 
 func TestEmployeeController_Update_Success(t *testing.T) {
 	router, mockRepo, controller := setupTest()

@@ -94,6 +94,15 @@ func (p *EmployeeController) Get(ctx *gin.Context) {
 //	@Success		200	{array}		models.Employee
 //	@Failure		500	{object}	map[string]string
 //	@Router			/employees [get]
+func (p *EmployeeController) GetAll(ctx *gin.Context) {
+	employee, err := p.Repo.GetAllEmployees()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, employee)
+}
 
 // CreateEmployee godoc
 //

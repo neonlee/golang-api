@@ -27,7 +27,7 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.Pets{},
 		&models.Produtos{},
 		&models.CategoriaProdutos{},
-		&models.Fornecedor{},
+		&models.Fornecedores{},
 		&models.Vendas{},
 		&models.VendaItem{},
 		&models.TipoServico{},
@@ -37,8 +37,8 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.CategoriaDespesa{},
 		&models.Prontuario{},
 		&models.Vacina{},
-		&models.Compra{},
-		&models.CompraItem{},
+		&models.Compras{},
+		&models.CompraItens{},
 
 		// models COM soft delete (se necessário)
 		// &models.LogSistema{}, // Se quiser soft delete para logs

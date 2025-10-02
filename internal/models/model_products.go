@@ -17,7 +17,7 @@ type CategoriaProdutos struct {
 	Produtos []Produtos `gorm:"foreignKey:CategoriaID" json:"produtos,omitempty"`
 }
 
-type Fornecedor struct {
+type Fornecedores struct {
 	ID           uint   `gorm:"primaryKey" json:"id"`
 	EmpresaID    uint   `gorm:"not null;index" json:"empresa_id"`
 	NomeFantasia string `gorm:"size:100;not null" json:"nome_fantasia"`
@@ -31,7 +31,7 @@ type Fornecedor struct {
 	// Relacionamentos
 	Empresa  Empresa    `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Produtos []Produtos `gorm:"foreignKey:FornecedorID" json:"produtos,omitempty"`
-	Compras  []Compra   `gorm:"foreignKey:FornecedorID" json:"compras,omitempty"`
+	Compras  []Compras  `gorm:"foreignKey:FornecedorID" json:"compras,omitempty"`
 }
 
 type Produtos struct {
@@ -55,10 +55,10 @@ type Produtos struct {
 	// Relacionamentos
 	Empresa       Empresa               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
 	Categoria     CategoriaProdutos     `gorm:"foreignKey:CategoriaID" json:"categoria,omitempty"`
-	Fornecedor    Fornecedor            `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
+	Fornecedor    Fornecedores          `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
 	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:ProdutoID" json:"movimentacoes,omitempty"`
 	VendaItens    []VendaItem           `gorm:"foreignKey:ProdutoID" json:"venda_itens,omitempty"`
-	CompraItens   []CompraItem          `gorm:"foreignKey:ProdutoID" json:"compra_itens,omitempty"`
+	CompraItens   []CompraItens         `gorm:"foreignKey:ProdutoID" json:"compra_itens,omitempty"`
 }
 
 type MovimentacaoEstoque struct {
