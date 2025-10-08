@@ -10,13 +10,13 @@ import (
 
 // EstoqueRepository interface
 type EstoqueRepository interface {
-	MovimentarEstoque(movimentacao *models.MovimentacaoEstoque) error
-	GetHistoricoEstoque(produtoID uint) ([]models.MovimentacaoEstoque, error)
+	MovimentarEstoque(movimentacao *models.MovimentacaoEstoques) error
+	GetHistoricoEstoque(produtoID uint) ([]models.MovimentacaoEstoques, error)
 	GetSaldoAtual(produtoID uint) (int, error)
 	AjustarEstoque(produtoID uint, novaQuantidade int, motivo string, usuarioID uint) error
 	TransferirEstoque(origemID, destinoID uint, quantidade int, usuarioID uint) error
 	GetRelatorioEstoque(empresaID uint) ([]responses.RelatorioEstoque, error)
-	GetMovimentacoesPorPeriodo(empresaID uint, inicio, fim string) ([]models.MovimentacaoEstoque, error)
+	GetMovimentacoesPorPeriodo(empresaID uint, inicio, fim string) ([]models.MovimentacaoEstoques, error)
 }
 type estoqueRepository struct {
 	db *gorm.DB
@@ -26,9 +26,9 @@ func NewEstoqueRepository(db *gorm.DB) EstoqueRepository {
 	return &estoqueRepository{db: db}
 }
 
-func (r *estoqueRepository) MovimentarEstoque(movimentacao *models.MovimentacaoEstoque) error {
+func (r *estoqueRepository) MovimentarEstoque(movimentacao *models.MovimentacaoEstoques) error {
 	// Obter estoque atual
-	var ultimaMovimentacao models.MovimentacaoEstoque
+	var ultimaMovimentacao models.MovimentacaoEstoques
 	err := r.db.
 		Where("produto_id = ?", movimentacao.ProdutoID).
 		Order("created_at DESC").
@@ -52,8 +52,8 @@ func (r *estoqueRepository) MovimentarEstoque(movimentacao *models.MovimentacaoE
 	return r.db.Create(movimentacao).Error
 }
 
-func (r *estoqueRepository) GetHistoricoEstoque(produtoID uint) ([]models.MovimentacaoEstoque, error) {
-	var movimentacoes []models.MovimentacaoEstoque
+func (r *estoqueRepository) GetHistoricoEstoque(produtoID uint) ([]models.MovimentacaoEstoques, error) {
+	var movimentacoes []models.MovimentacaoEstoques
 
 	err := r.db.
 		Where("produto_id = ?", produtoID).
@@ -65,7 +65,7 @@ func (r *estoqueRepository) GetHistoricoEstoque(produtoID uint) ([]models.Movime
 }
 
 func (r *estoqueRepository) GetSaldoAtual(produtoID uint) (int, error) {
-	var movimentacao models.MovimentacaoEstoque
+	var movimentacao models.MovimentacaoEstoques
 
 	err := r.db.
 		Where("produto_id = ?", produtoID).
@@ -98,7 +98,7 @@ func (r *estoqueRepository) AjustarEstoque(produtoID uint, novaQuantidade int, m
 		return nil
 	}
 
-	movimentacao := models.MovimentacaoEstoque{
+	movimentacao := models.MovimentacaoEstoques{
 		ProdutoID:          produtoID,
 		TipoMovimentacao:   tipoMovimentacao,
 		Quantidade:         diferenca,
@@ -114,7 +114,7 @@ func (r *estoqueRepository) AjustarEstoque(produtoID uint, novaQuantidade int, m
 func (r *estoqueRepository) TransferirEstoque(origemID, destinoID uint, quantidade int, usuarioID uint) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Saída do produto origem
-		movimentacaoSaida := models.MovimentacaoEstoque{
+		movimentacaoSaida := models.MovimentacaoEstoques{
 			ProdutoID:        origemID,
 			TipoMovimentacao: "saida",
 			Quantidade:       quantidade,
@@ -126,7 +126,7 @@ func (r *estoqueRepository) TransferirEstoque(origemID, destinoID uint, quantida
 		}
 
 		// Entrada no produto destino
-		movimentacaoEntrada := models.MovimentacaoEstoque{
+		movimentacaoEntrada := models.MovimentacaoEstoques{
 			ProdutoID:        destinoID,
 			TipoMovimentacao: "entrada",
 			Quantidade:       quantidade,
@@ -141,7 +141,7 @@ func (r *estoqueRepository) GetRelatorioEstoque(empresaID uint) ([]responses.Rel
 	var relatorios []responses.RelatorioEstoque
 
 	// Subquery para estoque atual
-	subquery := r.db.Model(&models.MovimentacaoEstoque{}).
+	subquery := r.db.Model(&models.MovimentacaoEstoques{}).
 		Select("produto_id, quantidade_atual").
 		Where("id IN (SELECT MAX(id) FROM movimentacao_estoque GROUP BY produto_id)")
 
@@ -156,8 +156,8 @@ func (r *estoqueRepository) GetRelatorioEstoque(empresaID uint) ([]responses.Rel
 	return relatorios, err
 }
 
-func (r *estoqueRepository) GetMovimentacoesPorPeriodo(empresaID uint, inicio, fim string) ([]models.MovimentacaoEstoque, error) {
-	var movimentacoes []models.MovimentacaoEstoque
+func (r *estoqueRepository) GetMovimentacoesPorPeriodo(empresaID uint, inicio, fim string) ([]models.MovimentacaoEstoques, error) {
+	var movimentacoes []models.MovimentacaoEstoques
 
 	err := r.db.
 		Joins("JOIN produtos ON movimentacao_estoque.produto_id = produtos.id").

@@ -18,10 +18,10 @@ type Usuarios struct {
 	UltimoLogin *time.Time `json:"ultimo_login"`
 
 	// Relacionamentos
-	Empresa       Empresas              `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
-	UsuarioPerfis []UsuarioPerfis       `gorm:"foreignKey:UsuarioID" json:"usuario_perfis,omitempty"`
-	Vendas        []Vendas              `gorm:"foreignKey:UsuarioID" json:"vendas,omitempty"`
-	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:UsuarioID" json:"movimentacoes,omitempty"`
+	Empresa       Empresas               `gorm:"foreignKey:EmpresaID" json:"empresa,omitempty"`
+	UsuarioPerfis []UsuarioPerfis        `gorm:"foreignKey:UsuarioID" json:"usuario_perfis,omitempty"`
+	Vendas        []Vendas               `gorm:"foreignKey:UsuarioID" json:"vendas,omitempty"`
+	Movimentacoes []MovimentacaoEstoques `gorm:"foreignKey:UsuarioID" json:"movimentacoes,omitempty"`
 }
 
 type Perfis struct {

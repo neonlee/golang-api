@@ -114,19 +114,20 @@ func (p *ControllersClientes) GetClients(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersClientes) CreateClients(ctx *gin.Context) {
-	var client models.Clientes
-	err := ctx.BindJSON(&client)
+	var cliente models.Clientes
+	err := ctx.ShouldBindJSON(&cliente)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = p.repository.Create(&client)
+
+	err = p.repository.Create(&cliente)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	ctx.JSON(http.StatusOK, &client)
+	ctx.JSON(http.StatusOK, &cliente)
 }
 
 // DeleteClient godoc

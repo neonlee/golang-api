@@ -42,26 +42,78 @@ type Planos struct {
 
 	Empresas []Empresas `gorm:"foreignKey:PlanoID" json:"empresas,omitempty"`
 }
-
-// JSON type para campos JSONB
 type JSON json.RawMessage
 
+// Value implementa driver.Valuer
 func (j JSON) Value() (driver.Value, error) {
-	if len(j) == 0 {
+	if len(j) == 0 || string(j) == "null" {
 		return nil, nil
 	}
 	return string(j), nil
 }
 
+// Scan implementa sql.Scanner
 func (j *JSON) Scan(value interface{}) error {
 	if value == nil {
 		*j = nil
 		return nil
 	}
-	s, ok := value.([]byte)
-	if !ok {
+
+	switch v := value.(type) {
+	case []byte:
+		if len(v) > 0 {
+			*j = append((*j)[0:0], v...)
+		} else {
+			*j = nil
+		}
+		return nil
+	case string:
+		if v != "" {
+			*j = JSON(v)
+		} else {
+			*j = nil
+		}
+		return nil
+	default:
 		return errors.New("invalid scan source for JSON")
 	}
-	*j = append((*j)[0:0], s...)
+}
+
+// MarshalJSON implementa json.Marshaler
+func (j JSON) MarshalJSON() ([]byte, error) {
+	if len(j) == 0 {
+		return []byte("null"), nil
+	}
+	return j, nil
+}
+
+// UnmarshalJSON implementa json.Unmarshaler - CORREÇÃO AQUI
+func (j *JSON) UnmarshalJSON(data []byte) error {
+	if j == nil {
+		return errors.New("JSON receiver is nil")
+	}
+
+	// Verifica se é null
+	if string(data) == "null" {
+		*j = nil
+		return nil
+	}
+
+	// Valida se o JSON é válido
+	if !json.Valid(data) {
+		return errors.New("invalid JSON")
+	}
+
+	// Faz uma cópia dos dados
+	*j = append((*j)[0:0], data...)
 	return nil
+}
+
+// Helper methods
+func (j JSON) IsNull() bool {
+	return len(j) == 0 || string(j) == "null"
+}
+
+func (j JSON) String() string {
+	return string(j)
 }

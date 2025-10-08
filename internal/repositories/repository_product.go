@@ -116,9 +116,9 @@ func (r *produtoRepository) GetProdutosBaixoEstoque(empresaID uint) ([]models.Pr
 	var produtos []models.Produtos
 
 	// Subquery para obter estoque atual
-	subquery := r.db.Model(&models.MovimentacaoEstoque{}).
+	subquery := r.db.Model(&models.MovimentacaoEstoques{}).
 		Select("produto_id, quantidade_atual").
-		Where("id IN (SELECT MAX(id) FROM movimentacao_estoque GROUP BY produto_id)")
+		Where("id IN (SELECT MAX(id) FROM movimentacao_estoques GROUP BY produto_id)")
 
 	err := r.db.
 		Joins("JOIN (?) AS estoque ON produtos.id = estoque.produto_id", subquery).
@@ -133,7 +133,7 @@ func (r *produtoRepository) GetProdutosBaixoEstoque(empresaID uint) ([]models.Pr
 
 func (r *produtoRepository) UpdateEstoque(produtoID uint, quantidade int) error {
 	// Obter estoque atual
-	var movimentacao models.MovimentacaoEstoque
+	var movimentacao models.MovimentacaoEstoques
 	err := r.db.
 		Where("produto_id = ?", produtoID).
 		Order("created_at DESC").
@@ -145,7 +145,7 @@ func (r *produtoRepository) UpdateEstoque(produtoID uint, quantidade int) error 
 	}
 
 	// Criar nova movimentação
-	novaMovimentacao := models.MovimentacaoEstoque{
+	novaMovimentacao := models.MovimentacaoEstoques{
 		ProdutoID:          produtoID,
 		TipoMovimentacao:   "ajuste",
 		Quantidade:         quantidade,
@@ -162,7 +162,7 @@ func (r *produtoRepository) GetProdutoComEstoque(id uint) (*models.Produtos, err
 	var produto models.Produtos
 
 	// Subquery para estoque atual
-	subquery := r.db.Model(&models.MovimentacaoEstoque{}).
+	subquery := r.db.Model(&models.MovimentacaoEstoques{}).
 		Select("produto_id, quantidade_atual").
 		Where("id IN (SELECT MAX(id) FROM movimentacao_estoque GROUP BY produto_id)")
 

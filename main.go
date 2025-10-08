@@ -52,7 +52,7 @@ func main() {
 
 	clients := server.Group("/clients")
 	{
-		clients.GET("/", clientsController.GetClients)
+		clients.POST("/ListByEmpresa/:id", clientsController.GetClients)
 		clients.GET("/:id", clientsController.GetClient)
 		clients.POST("/", clientsController.CreateClients)
 		clients.PUT("/:id", clientsController.UpdateClient)
@@ -106,7 +106,7 @@ func main() {
 		product.GET("/:id", productController.GetProductByID)
 		product.GET("/", productController.ListByEmpresa)
 		product.GET("/search", productController.SearchProducts)
-		product.GET("/low-stock", productController.GetProdutosBaixoEstoque)
+		product.GET("/low-stock/:empresa_id", productController.GetProdutosBaixoEstoque)
 		product.PATCH("/update-stock/:id", productController.UpdateEstoque)
 		product.GET("/with-stock/:id", productController.GetProdutoComEstoque)
 		product.GET("/expiring-soon/:id", productController.GetProdutosProximosVencimento)

@@ -39,6 +39,7 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.Vacinas{},
 		&models.Compras{},
 		&models.CompraItens{},
+		&models.MovimentacaoEstoques{},
 
 		// models COM soft delete (se necessário)
 		// &models.LogSistema{}, // Se quiser soft delete para logs

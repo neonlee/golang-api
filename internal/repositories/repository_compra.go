@@ -43,7 +43,7 @@ func (r *compraRepository) Create(compra *models.Compras, itens []models.CompraI
 			}
 
 			// Atualizar estoque
-			movimentacao := models.MovimentacaoEstoque{
+			movimentacao := models.MovimentacaoEstoques{
 				ProdutoID:        itens[i].ProdutoID,
 				TipoMovimentacao: "entrada",
 				Quantidade:       itens[i].Quantidade,

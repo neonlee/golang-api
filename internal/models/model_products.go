@@ -1,10 +1,6 @@
 // models/entities/produto.go
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type CategoriasProdutos struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`
 	EmpresaID uint   `gorm:"not null;index" json:"empresa_id"`
@@ -46,19 +42,17 @@ type Produtos struct {
 	PrecoCusto       float64 `gorm:"type:decimal(10,2)" json:"preco_custo"`
 	PrecoVenda       float64 `gorm:"type:decimal(10,2)" json:"preco_venda"`
 	EstoqueMinimo    int     `gorm:"default:0" json:"estoque_minimo"`
-	EstoqueAtual     int     `gorm:"default:0" json:"estoque_atual"`
 	Ativo            bool    `gorm:"default:true" json:"ativo"`
 
 	// Relacionamentos
-	Categoria     CategoriasProdutos    `gorm:"foreignKey:CategoriaID" json:"categoria,omitempty"`
-	Fornecedor    Fornecedores          `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
-	Movimentacoes []MovimentacaoEstoque `gorm:"foreignKey:ProdutoID" json:"movimentacoes,omitempty"`
-	VendaItens    []VendaItem           `gorm:"foreignKey:ProdutoID" json:"venda_itens,omitempty"`
-	CompraItens   []CompraItens         `gorm:"foreignKey:ProdutoID" json:"compra_itens,omitempty"`
+	Categoria     CategoriasProdutos     `gorm:"foreignKey:CategoriaID" json:"categoria,omitempty"`
+	Fornecedor    Fornecedores           `gorm:"foreignKey:FornecedorID" json:"fornecedor,omitempty"`
+	Movimentacoes []MovimentacaoEstoques `gorm:"foreignKey:ProdutoID" json:"movimentacoes,omitempty"`
+	VendaItens    []VendaItem            `gorm:"foreignKey:ProdutoID" json:"venda_itens,omitempty"`
+	CompraItens   []CompraItens          `gorm:"foreignKey:ProdutoID" json:"compra_itens,omitempty"`
 }
 
-type MovimentacaoEstoque struct {
-	gorm.Model
+type MovimentacaoEstoques struct {
 	ID                 uint   `gorm:"primaryKey" json:"id"`
 	ProdutoID          uint   `gorm:"not null;index" json:"produto_id"`
 	TipoMovimentacao   string `gorm:"size:20;not null" json:"tipo_movimentacao"`

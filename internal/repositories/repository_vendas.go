@@ -48,7 +48,7 @@ func (r *vendaRepository) Create(venda *models.Vendas, itens []models.VendaItem)
 
 			// Se for produto, atualizar estoque
 			if itens[i].ProdutoID != nil {
-				movimentacao := models.MovimentacaoEstoque{
+				movimentacao := models.MovimentacaoEstoques{
 					ProdutoID:        *itens[i].ProdutoID,
 					TipoMovimentacao: "saida",
 					Quantidade:       itens[i].Quantidade,
@@ -93,7 +93,7 @@ func (r *vendaRepository) CancelarVenda(id uint, motivo string) error {
 		// Reverter estoque dos produtos
 		for _, item := range venda.Itens {
 			if item.ProdutoID != nil {
-				movimentacao := models.MovimentacaoEstoque{
+				movimentacao := models.MovimentacaoEstoques{
 					ProdutoID:        *item.ProdutoID,
 					TipoMovimentacao: "entrada",
 					Quantidade:       item.Quantidade,
