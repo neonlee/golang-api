@@ -43,11 +43,13 @@ func main() {
 
 	supplier := server.Group("/suppliers")
 	{
-		supplier.GET("/", supplierController.GetSuppliers)
 		supplier.GET("/:id", supplierController.Get)
 		supplier.POST("/", supplierController.Create)
 		supplier.PUT("/:id", supplierController.Update)
 		supplier.DELETE("/:id", supplierController.Delete)
+		supplier.GET("/ListByEmpresa/:empresa_id", supplierController.ListByEmpresa)
+		supplier.GET("/search/:empresa_id", supplierController.Search)
+		supplier.GET("/count/:empresa_id", supplierController.GetTotalFornecedores)
 	}
 
 	clients := server.Group("/clients")
@@ -57,10 +59,10 @@ func main() {
 		clients.POST("/", clientsController.CreateClients)
 		clients.PUT("/:id", clientsController.UpdateClient)
 		clients.DELETE("/:id", clientsController.DeleteClient)
-		clients.GET("/search", clientsController.SearchClients)
-		clients.GET("/new-clients", clientsController.GetNewClients)
+		clients.GET("/:id/search", clientsController.SearchClients)
+		clients.GET("/novos_clientes/:empresa_id", clientsController.GetNewClients)
 		clients.GET("/list", clientsController.ListByEmpresa)
-		clients.GET("/count", clientsController.GetTotalClients)
+		clients.GET("/count/:empresa_id", clientsController.GetTotalClients)
 
 	}
 	employee := server.Group("/employee")
@@ -83,11 +85,12 @@ func main() {
 
 	services := server.Group("/services")
 	{
-		// services.GET("/", servicesController.GetServices)
+		services.GET("/list", servicesController.GetServices)
 		services.GET("/:id", servicesController.GetService)
 		services.POST("/", servicesController.CreateServices)
 		services.PUT("/:id", servicesController.UpdateService)
 		services.DELETE("/:id", servicesController.DeleteService)
+		services.GET("/most-used", servicesController.GetServicosMaisUtilizados)
 	}
 
 	pets := server.Group("/pets")
