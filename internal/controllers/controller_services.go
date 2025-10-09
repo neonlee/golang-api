@@ -29,7 +29,7 @@ func NewServicesController(connection repositories.ServicoRepository) *Controlle
 //	@Router			/clients [get]
 func (p *ControllersServices) UpdateService(ctx *gin.Context) {
 
-	var servico models.TipoServico
+	var servico models.TiposServicos
 	if err := ctx.BindJSON(&servico); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
@@ -80,15 +80,23 @@ func (p *ControllersServices) GetService(ctx *gin.Context) {
 //	@Success		200	{array}		models.Service
 //	@Failure		500	{object}	map[string]string
 //	@Router			/clients [get]
-// func (p *ControllersServices) GetServices(ctx *gin.Context) {
-// 	result, err := p.repository.GetServices()
+func (p *ControllersServices) GetServices(ctx *gin.Context) {
+	empresaIDStr := ctx.Query("empresa_id")
+	categoria := ctx.Query("categoria")
+	empresaID, err := strconv.Atoi(empresaIDStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID da empresa inválido"})
+		return
+	}
 
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, err)
-// 	}
+	services, err := p.repository.ListTiposServico(uint(empresaID), categoria)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 
-// 	ctx.JSON(http.StatusOK, result)
-// }
+	ctx.JSON(http.StatusOK, services)
+}
 
 // PostPet godoc
 //
@@ -101,7 +109,7 @@ func (p *ControllersServices) GetService(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/client [get]
 func (p *ControllersServices) CreateServices(ctx *gin.Context) {
-	var client models.TipoServico
+	var client models.TiposServicos
 	err := ctx.BindJSON(&client)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -142,4 +150,25 @@ func (p *ControllersServices) DeleteService(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"deleted": true})
+}
+
+func (p *ControllersServices) GetServicosMaisUtilizados(ctx *gin.Context) {
+	empresaIDStr := ctx.Query("empresa_id")
+	limiteStr := ctx.Query("limite")
+	empresaID, err := strconv.Atoi(empresaIDStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID da empresa inválido"})
+		return
+	}
+	limite, err := strconv.Atoi(limiteStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "Limite inválido"})
+		return
+	}
+	servicos, err := p.repository.GetServicosMaisUtilizados(uint(empresaID), limite)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, servicos)
 }

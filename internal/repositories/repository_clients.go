@@ -14,7 +14,6 @@ type ClientesRepository interface {
 	Delete(id uint) error
 	ListByEmpresa(empresaID uint, filters requests.ClientesFilter) ([]models.Clientes, error)
 	Search(empresaID uint, termo string) ([]models.Clientes, error)
-	GetWithPets(id uint) (*models.Clientes, error)
 	GetTotalClientes(empresaID uint) (int64, error)
 	GetClientesNovos(empresaID uint, mes int, ano int) ([]models.Clientes, error)
 }
@@ -78,15 +77,6 @@ func (r *clienteRepository) Search(empresaID uint, termo string) ([]models.Clien
 		Find(&clientes).Error
 
 	return clientes, err
-}
-
-func (r *clienteRepository) GetWithPets(id uint) (*models.Clientes, error) {
-	var cliente models.Clientes
-	err := r.db.
-		Preload("Pets").
-		First(&cliente, id).Error
-
-	return &cliente, err
 }
 
 func (r *clienteRepository) GetTotalClientes(empresaID uint) (int64, error) {

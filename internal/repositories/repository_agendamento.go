@@ -108,7 +108,7 @@ func (r *agendamentoRepository) VerificarDisponibilidade(empresaID uint, dataHor
 	var count int64
 
 	// Buscar duração do serviço
-	var servico models.TipoServico
+	var servico models.TiposServicos
 	if err := r.db.First(&servico, servicoID).Error; err != nil {
 		return false, err
 	}

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"petApi/internal/models"
 	"petApi/internal/repositories"
+	"petApi/internal/requests"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -70,26 +71,6 @@ func (p *ControllersSuppliers) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
-// GetSuppliers godoc
-//
-//	@Summary		Lista todos os clientes
-//	@Description	Retorna todos os clientes cadastrados
-//	@Tags			client
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{array}		models.Client
-//	@Failure		500	{object}	map[string]string
-//	@Router			/clients [get]
-func (p *ControllersSuppliers) GetSuppliers(ctx *gin.Context) {
-	result, err := p.repository.GetTotalFornecedores(uint(1))
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
 // PostPet godoc
 //
 //	@Summary		Cria um cliente
@@ -142,4 +123,57 @@ func (p *ControllersSuppliers) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"deleted": true})
+}
+
+func (p *ControllersSuppliers) Search(ctx *gin.Context) {
+	empresaIDParam := ctx.Param("empresa_id")
+	empresaID, err := strconv.Atoi(empresaIDParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID da empresa inválido"})
+		return
+	}
+	termo := ctx.Query("termo")
+	fornecedores, err := p.repository.Search(uint(empresaID), termo)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, fornecedores)
+}
+
+func (p *ControllersSuppliers) GetTotalFornecedores(ctx *gin.Context) {
+	empresaIDParam := ctx.Param("empresa_id")
+	empresaID, err := strconv.Atoi(empresaIDParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID da empresa inválido"})
+		return
+	}
+	total, err := p.repository.GetTotalFornecedores(uint(empresaID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"total": total})
+}
+
+func (p *ControllersSuppliers) ListByEmpresa(ctx *gin.Context) {
+	empresaIDParam := ctx.Param("empresa_id")
+	empresaID, err := strconv.Atoi(empresaIDParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID da empresa inválido"})
+		return
+	}
+	var filters requests.FornecedorFilter
+	if err := ctx.BindQuery(&filters); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "Filtros inválidos"})
+		return
+	}
+
+	fornecedores, err := p.repository.ListByEmpresa(uint(empresaID), filters)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, fornecedores)
 }

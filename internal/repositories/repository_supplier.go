@@ -52,7 +52,7 @@ func (r *supplierRepository) ListByEmpresa(empresaID uint, filters requests.Forn
 func (r *supplierRepository) Search(empresaID uint, termo string) ([]models.Fornecedores, error) {
 	var fornecedores []models.Fornecedores
 	err := r.connection.
-		Where("empresa_id = ? AND (nome ILIKE ? OR email ILIKE ? OR telefone ILIKE ?)",
+		Where("empresa_id = ? AND (nome_fantasia ILIKE ? OR email ILIKE ? OR telefone ILIKE ?)",
 			empresaID, "%"+termo+"%", "%"+termo+"%", "%"+termo+"%").
 		Limit(10).
 		Find(&fornecedores).Error

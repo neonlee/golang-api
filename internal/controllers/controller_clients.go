@@ -175,7 +175,7 @@ func (p *ControllersClientes) SearchClients(ctx *gin.Context) {
 }
 
 func (p *ControllersClientes) GetTotalClients(ctx *gin.Context) {
-	id := ctx.Param("EmpresaID")
+	id := ctx.Param("empresa_id")
 
 	user, err := strconv.Atoi(id)
 	if err != nil {
@@ -202,7 +202,7 @@ func (p *ControllersClientes) GetNewClients(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "Ano inválido"})
 		return
 	}
-	id := ctx.Param("EmpresaID")
+	id := ctx.Param("empresa_id")
 
 	user, err := strconv.Atoi(id)
 	if err != nil {
