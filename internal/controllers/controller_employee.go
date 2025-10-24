@@ -10,10 +10,10 @@ import (
 )
 
 type EmployeeController struct {
-	Repo repositories.EmployeesRepository
+	Repo repositories.FuncionariosRepository
 }
 
-func NewEmployeeController(repository repositories.EmployeesRepository) *EmployeeController {
+func NewEmployeeController(repository repositories.FuncionariosRepository) *EmployeeController {
 	return &EmployeeController{Repo: repository}
 }
 
@@ -39,19 +39,19 @@ func (p *EmployeeController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var employee models.Employees
+	var employee models.Funcionarios
 	if err := ctx.BindJSON(&employee); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
 	}
 
-	updatedEmployee, err := p.Repo.UpdateEmployees(employeeID, employee)
+	err = p.Repo.UpdateFuncionarios(employeeID, &employee)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, updatedEmployee)
+	ctx.JSON(http.StatusOK, &employee)
 }
 
 // GetEmployee godoc
@@ -67,15 +67,21 @@ func (p *EmployeeController) Update(ctx *gin.Context) {
 //	@Failure		404	{object}	map[string]string
 //	@Router			/employees/{id} [get]
 func (p *EmployeeController) Get(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("empresaID")
 
-	employeeID, err := strconv.Atoi(id)
+	empresaID, err := strconv.Atoi(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
 		return
 	}
+	idFuncionario := ctx.Param("funcionarioID")
 
-	employee, err := p.Repo.GetEmployees(employeeID)
+	funcionarioId, err := strconv.Atoi(idFuncionario)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	employee, err := p.Repo.GetFuncionarios(funcionarioId, uint(empresaID))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
@@ -84,7 +90,7 @@ func (p *EmployeeController) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, employee)
 }
 
-// GetEmployees godoc
+// GetFuncionarios godoc
 //
 //	@Summary		Lista todos os funcionários
 //	@Description	Retorna todos os funcionários cadastrados
@@ -95,7 +101,14 @@ func (p *EmployeeController) Get(ctx *gin.Context) {
 //	@Failure		500	{object}	map[string]string
 //	@Router			/employees [get]
 func (p *EmployeeController) GetAll(ctx *gin.Context) {
-	employee, err := p.Repo.GetAllEmployees()
+	id := ctx.Query("empresa_id")
+
+	employeeID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	employee, err := p.Repo.GetAllFuncionarios(uint(employeeID))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
@@ -117,7 +130,7 @@ func (p *EmployeeController) GetAll(ctx *gin.Context) {
 //	@Failure		500		{object}	map[string]string
 //	@Router			/employees [post]
 func (p *EmployeeController) Create(ctx *gin.Context) {
-	var employee models.Employees
+	var employee models.Funcionarios
 	err := ctx.BindJSON(&employee)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -154,7 +167,7 @@ func (p *EmployeeController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	success, err := p.Repo.DeleteEmployees(employeeID)
+	success, err := p.Repo.DeleteFuncionarios(employeeID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return

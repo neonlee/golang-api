@@ -1,23 +1,57 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 )
 
-type Employees struct {
-	PetshopId    int       `gorm:"column:petshop_id" json:"petshop_id"`
-	Id           int       `gorm:"column:id;primaryKey" json:"id"`
-	Nome         string    `gorm:"column:nome; not null" json:"name"`
-	Cpf          string    `gorm:"column:cpf; not null" json:"cpf"`
-	Telefone     string    `gorm:"column:telefone" json:"cellphone"`
-	Cargo        string    `gorm:"column:cargo" json:"cargo"`
-	DataAdmissao time.Time `gorm:"column:data_admissao" json:"hire_date"`
-	DataDemissao time.Time `gorm:"column:data_demissao" json:"termination_date"`
-	Salario      float64   `gorm:"column:salario" json:"salary"`
-	Comissao     float64   `gorm:"column:comissao" json:"commission"`
-	Ativo        string    `gorm:"column:ativo;default:true" json:"active"`
-	UserID       int       `gorm:"column:user_id;not null;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user_id"`
-	User         Usuarios  `gorm:"foreignKey:id;references:UserID" json:"supplier,omitempty"`
-	CreatedAt    time.Time `gorm:"column:create_at" json:"created_at"`
-	UpdatedAt    time.Time `gorm:"column:updated_at" json:"updated_at"`
+type Funcionarios struct {
+	ID           uint       `json:"id" gorm:"primaryKey"`
+	Nome         string     `json:"nome"`
+	CPF          string     `json:"cpf"`
+	Telefone     string     `json:"telefone"`
+	Cargo        string     `json:"cargo"`
+	DataAdmissao time.Time  `json:"data_admissao"`
+	DataDemissao *time.Time `json:"data_demissao,omitempty"` // Use pointer para campos opcionais
+	Salario      float64    `json:"salario"`
+	Comissao     float64    `json:"comissao"`
+	Ativo        bool       `json:"ativo"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UsuarioID    uint       `gorm:"not null;index" json:"usuario_id"`
+}
+
+// Custom JSON unmarshal para DataAdmissao
+func (f *Funcionarios) UnmarshalJSON(data []byte) error {
+	type Alias Funcionarios
+	aux := &struct {
+		DataAdmissao string `json:"data_admissao"`
+		DataDemissao string `json:"data_demissao,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(f),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Parse da data de admissão
+	if aux.DataAdmissao != "" {
+		parsedTime, err := time.Parse("2006-01-02", aux.DataAdmissao)
+		if err != nil {
+			return err
+		}
+		f.DataAdmissao = parsedTime
+	}
+
+	// Parse da data de demissão (opcional)
+	if aux.DataDemissao != "" {
+		parsedTime, err := time.Parse("2006-01-02", aux.DataDemissao)
+		if err != nil {
+			return err
+		}
+		f.DataDemissao = &parsedTime
+	}
+
+	return nil
 }

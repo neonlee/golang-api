@@ -14,7 +14,6 @@ type PetRepository interface {
 	Update(pet *models.Pets) error
 	Delete(id uint) error
 	GetByClientes(clienteID uint) ([]models.Pets, error)
-	GetWithClientes(id uint) (*models.Pets, error)
 	ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pets, error)
 	GetTotalPets(empresaID uint) (int64, error)
 	GetPetsPorEspecie(empresaID uint) (map[string]int64, error)
@@ -36,7 +35,7 @@ func (r *petRepository) Create(pet *models.Pets) error {
 
 func (r *petRepository) GetByID(id uint) (*models.Pets, error) {
 	var pet models.Pets
-	err := r.db.Preload("Clientes").First(&pet, id).Error
+	err := r.db.Where("ID = ?", id).Preload("Clientes").Find(&pet).Error
 	return &pet, err
 }
 
@@ -50,14 +49,8 @@ func (r *petRepository) Delete(id uint) error {
 
 func (r *petRepository) GetByClientes(clienteID uint) ([]models.Pets, error) {
 	var pets []models.Pets
-	err := r.db.Where("cliente_id = ?", clienteID).Order("nome ASC").Find(&pets).Error
+	err := r.db.Where("cliente_id = ?", clienteID).Preload("Clientes").Order("nome ASC").Find(&pets).Error
 	return pets, err
-}
-
-func (r *petRepository) GetWithClientes(id uint) (*models.Pets, error) {
-	var pet models.Pets
-	err := r.db.Preload("Clientes").First(&pet, id).Error
-	return &pet, err
 }
 
 func (r *petRepository) ListByEmpresa(empresaID uint, filters requests.PetFilter) ([]models.Pets, error) {

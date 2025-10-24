@@ -37,7 +37,7 @@ func (r *clienteRepository) GetByID(id uint) (*models.Clientes, error) {
 }
 
 func (r *clienteRepository) Update(cliente *models.Clientes) error {
-	return r.db.Save(cliente).Error
+	return r.db.Updates(cliente).Error
 }
 
 func (r *clienteRepository) Delete(id uint) error {

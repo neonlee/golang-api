@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"petApi/internal/models"
 	"petApi/internal/repositories"
+	"petApi/internal/requests"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -27,15 +28,22 @@ func NewPetsController(connection repositories.PetRepository) *ControllersPets {
 //	@Success		200	{array}		models.Pet
 //	@Failure		500	{object}	map[string]string
 //	@Router			/pets [get]
-// func (p *ControllersPets) GetPets(ctx *gin.Context) {
-// 	result, err := p.repository.GetPets()
+func (p *ControllersPets) GetByClientes(ctx *gin.Context) {
+	id := ctx.Param("cliente_id")
 
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, err)
-// 	}
+	clienteID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	result, err := p.repository.GetByClientes(uint(clienteID))
 
-// 	ctx.JSON(http.StatusOK, result)
-// }
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
+
+	ctx.JSON(http.StatusOK, result)
+}
 
 // GetPet godoc
 //
@@ -103,7 +111,7 @@ func (p *ControllersPets) UpdatePet(ctx *gin.Context) {
 //	@Router			/pets [get]
 func (p *ControllersPets) CreatePets(ctx *gin.Context) {
 	var pet models.Pets
-	err := ctx.BindJSON(&pet)
+	err := ctx.ShouldBindJSON(&pet)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -143,4 +151,55 @@ func (p *ControllersPets) DeletePet(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, &user)
+}
+
+func (p *ControllersPets) ListByEmpresa(ctx *gin.Context) {
+	id := ctx.Param("empresa_id")
+	filters := requests.PetFilter{}
+	empresaID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+
+	filters.Especie = ctx.Query("especie")
+	filters.Nome = ctx.Query("nome")
+
+	result, err := p.repository.ListByEmpresa(uint(empresaID), filters)
+	if err != nil {
+
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (p *ControllersPets) GetTotalPets(ctx *gin.Context) {
+	id := ctx.Param("empresa_id")
+	empresaID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+
+	result, err := p.repository.GetTotalPets(uint(empresaID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"total_pets": result})
+}
+func (p *ControllersPets) GetPetsPorEspecie(ctx *gin.Context) {
+	id := ctx.Param("empresa_id")
+	empresaID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "ID inválido"})
+		return
+	}
+	result, err := p.repository.GetPetsPorEspecie(uint(empresaID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
 }

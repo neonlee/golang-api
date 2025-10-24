@@ -26,10 +26,12 @@ func main() {
 	ClientsRepo := repositories.NewClientesRepository(dbConnection)
 	servicesRepo := repositories.NewServicoRepository(dbConnection)
 	categoryRepo := repositories.NewCategoryRepository(dbConnection)
-	employeeRepo := repositories.NewEmployeesRepository(dbConnection)
+	employeeRepo := repositories.NewFuncionariosRepository(dbConnection)
 	supplierRepo := repositories.NewSupplierRepository(dbConnection)
 	productRepo := repositories.NewProdutoRepository(dbConnection)
 	authRepo := repositories.NewAuthRepository(dbConnection, "token", time.Hour*24)
+	userRepo := repositories.NewUsuarioRepository(dbConnection)
+	medicoRepo := repositories.NewMedicoVeterinarioRepository(dbConnection)
 
 	clientsController := Controllers.NewClientsController(ClientsRepo)
 	petsController := Controllers.NewPetsController(petsRepo)
@@ -39,6 +41,9 @@ func main() {
 	supplierController := Controllers.NewSuppliersController(supplierRepo)
 	productController := Controllers.NewProductController(productRepo)
 	authController := Controllers.NewAuthController(authRepo)
+	userController := Controllers.NewUsuarioController(userRepo)
+	medicoController := Controllers.NewMedicoVeterinarioController(medicoRepo)
+
 	server.POST("/auth/login", authController.Login)
 
 	supplier := server.Group("/suppliers")
@@ -67,8 +72,8 @@ func main() {
 	}
 	employee := server.Group("/employee")
 	{
-		employee.GET("/", employeeController.Get)
-		employee.GET("/:id", employeeController.Get)
+		employee.GET("/", employeeController.GetAll)
+		employee.GET("/:empresaID/:funcionarioID", employeeController.Get)
 		employee.POST("/", employeeController.Create)
 		employee.PUT("/:id", employeeController.Update)
 		employee.DELETE("/:id", employeeController.Delete)
@@ -95,11 +100,14 @@ func main() {
 
 	pets := server.Group("/pets")
 	{
-		// pets.GET("/", petsController.GetPets)
+		pets.GET("/GetByClientes/:cliente_id", petsController.GetByClientes)
 		pets.POST("/", petsController.CreatePets)
 		pets.PUT("/:id", petsController.UpdatePet)
 		pets.DELETE("/:id", petsController.DeletePet)
-		pets.GET("/:id", petsController.GetPet)
+		pets.GET("/GetPet/:id", petsController.GetPet)
+		pets.GET("/list/:empresa_id", petsController.ListByEmpresa)
+		pets.GET("/count/:empresa_id", petsController.GetTotalPets)
+		pets.GET("/get-especie/:empresa_id", petsController.GetPetsPorEspecie)
 	}
 	product := server.Group("/products")
 	{
@@ -116,6 +124,34 @@ func main() {
 		product.GET("/expiring-today/:id", productController.GetProdutosVencimentoHoje)
 		product.GET("/out-of-stock/:id", productController.GetProdutosSemEstoque)
 		product.GET("/expired/:id", productController.GetProdutosVencidos)
+	}
+
+	user := server.Group("/users")
+	{
+		user.GET("/:id", userController.GetByID)
+		user.PUT("/", userController.Update)
+		user.DELETE("/:id", userController.Delete)
+		user.PUT("/update-senha", userController.UpdateSenha)
+		user.GET("/empresa/:empresa_id", userController.ListByEmpresa)
+		user.PUT("/assign-perfis", userController.AssignPerfis)
+		user.GET("/has-permission/:id", userController.HasPermission)
+		user.GET("/check-empresa-access/:usuario_id/:empresa_id", userController.CheckEmpresaAccess)
+		user.GET("/permissoes/:id", userController.GetPermissoes)
+		user.POST("/", userController.CreateUser)
+		user.GET("/with-perfis", userController.GetWithPerfis)
+		user.GET("/get-by-email", userController.GetByEmail)
+	}
+
+	medico := server.Group("/medico-veterinario")
+	{
+		medico.POST("/veterinario", medicoController.CreateVeterinario)
+		medico.POST("/disponibilidade", medicoController.AddDisponibilidade)
+		medico.GET("/especialidade", medicoController.AddEspecialidade)
+		medico.DELETE("/disponibilidade/:id", medicoController.DeleteDisponibilidade)
+		medico.PUT("/especialidade/:id", medicoController.UpdateDisponibilidade)
+		medico.DELETE("/especialidade/:id", medicoController.DeleteEspecialidade)
+		medico.GET("/list", medicoController.ListarMedicosComEspecialidadesEDisponibilidades)
+
 	}
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
