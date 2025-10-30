@@ -7,13 +7,13 @@ import (
 )
 
 type MedicoVeterinarioRepository interface {
-	CreateVeterinario(medico models.MedicoVeterinario) error
+	CreateVeterinario(medico models.MedicosVeterinarios) error
 	AddEspecialidade(especialidade models.MedicoEspecialidade) error
 	DeleteEspecialidade(idMedico uint, idEspecialidade uint) error
 	AddDisponibilidade(disponibilidade models.MedicoDisponibilidade) error
 	UpdateDisponibilidade(id uint, disponibilidade models.MedicoDisponibilidade) error
 	DeleteDisponibilidade(id uint) error
-	ListarMedicosComEspecialidadesEDisponibilidades() ([]models.MedicoVeterinario, error)
+	ListarMedicosComEspecialidadesEDisponibilidades() ([]models.MedicosVeterinarios, error)
 }
 
 type medicoVeterinarioRepository struct {
@@ -24,7 +24,7 @@ func NewMedicoVeterinarioRepository(connection *gorm.DB) MedicoVeterinarioReposi
 	return &medicoVeterinarioRepository{db: connection}
 }
 
-func (m *medicoVeterinarioRepository) CreateVeterinario(medico models.MedicoVeterinario) error {
+func (m *medicoVeterinarioRepository) CreateVeterinario(medico models.MedicosVeterinarios) error {
 	return m.db.Create(&medico).Error
 }
 
@@ -43,8 +43,8 @@ func (m *medicoVeterinarioRepository) DeleteDisponibilidade(id uint) error {
 func (m *medicoVeterinarioRepository) DeleteEspecialidade(idMedico uint, idEspecialidade uint) error {
 	return m.db.Where("medico_id = ? AND id = ?", idMedico, idEspecialidade).Delete(&models.MedicoEspecialidade{}).Error
 }
-func (m *medicoVeterinarioRepository) ListarMedicosComEspecialidadesEDisponibilidades() ([]models.MedicoVeterinario, error) {
-	var medicos []models.MedicoVeterinario
-	err := m.db.Preload("Especialidades").Preload("Disponibilidades").Find(&medicos).Error
+func (m *medicoVeterinarioRepository) ListarMedicosComEspecialidadesEDisponibilidades() ([]models.MedicosVeterinarios, error) {
+	var medicos []models.MedicosVeterinarios
+	err := m.db.Preload("Especialidades").Preload("Disponibilidades").Preload("Funcionarios").Find(&medicos).Error
 	return medicos, err
 }

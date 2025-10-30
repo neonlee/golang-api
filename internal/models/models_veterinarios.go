@@ -2,11 +2,11 @@ package models
 
 import "time"
 
-type MedicoVeterinario struct {
+type MedicosVeterinarios struct {
 	ID                   uint      `gorm:"primaryKey" json:"id"`
 	FuncionarioID        uint      `gorm:"not null" json:"funcionario_id"`
 	CRMV                 string    `gorm:"size:20;not null;unique" json:"crmv"`
-	CRMVUF               string    `gorm:"size:2;not null" json:"crmv_uf"`
+	CRMVUF               string    `gorm:"column:crmv_uf;size:2;not null" json:"crmv_uf"`
 	Especialidade        string    `gorm:"size:100" json:"especialidade"`
 	FormacaoGraduacao    string    `gorm:"size:100" json:"formacao_graduacao"`
 	InstituicaoGraduacao string    `gorm:"size:100" json:"instituicao_graduacao"`
@@ -27,7 +27,7 @@ type MedicoVeterinario struct {
 	UpdatedAt            time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relacionamentos
-	Funcionario      Funcionarios            `gorm:"foreignKey:FuncionarioID" json:"funcionario"`
+	Funcionarios     Funcionarios            `gorm:"foreignKey:FuncionarioID;references:ID" json:"funcionario"`
 	Especialidades   []MedicoEspecialidade   `gorm:"foreignKey:MedicoID" json:"especialidades,omitempty"`
 	Disponibilidades []MedicoDisponibilidade `gorm:"foreignKey:MedicoID" json:"disponibilidades,omitempty"`
 }

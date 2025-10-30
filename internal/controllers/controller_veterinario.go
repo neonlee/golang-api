@@ -18,7 +18,7 @@ func NewMedicoVeterinarioController(connection repositories.MedicoVeterinarioRep
 }
 
 func (v *ControllersVeterinario) CreateVeterinario(ctx *gin.Context) {
-	var medico models.MedicoVeterinario
+	var medico models.MedicosVeterinarios
 	if err := ctx.BindJSON(&medico); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro": "JSON inválido"})
 		return
