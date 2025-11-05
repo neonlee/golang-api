@@ -48,3 +48,17 @@ type MedicoDisponibilidade struct {
 	TipoServico string `gorm:"size:10;not null;check:tipo_servico IN ('consulta','cirurgia','plantao')" json:"tipo_servico"`
 	Ativo       bool   `gorm:"default:true" json:"ativo"`
 }
+
+func (md *MedicoDisponibilidade) EstaDisponivel(diaSemana time.Weekday) bool {
+	diaSemanaStr := map[time.Weekday]string{
+		time.Monday:    "segunda",
+		time.Tuesday:   "terca",
+		time.Wednesday: "quarta",
+		time.Thursday:  "quinta",
+		time.Friday:    "sexta",
+		time.Saturday:  "sabado",
+		time.Sunday:    "domingo",
+	}[diaSemana]
+	return md.DiaSemana == diaSemanaStr
+
+}

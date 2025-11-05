@@ -18,7 +18,7 @@ type Pets struct {
 	FotoURL        string     `gorm:"size:255" json:"foto_url"`
 	CreatedAt      time.Time  `gorm:"autoCreateTime" json:"created_at"`
 	// Relacionamentos
-	Clientes     Clientes      `gorm:"foreignKey:ClientesID;references:ID" json:"cliente"`
-	Agendamentos []Agendamento `gorm:"foreignKey:PetID" json:"agendamentos,omitempty"`
-	Prontuarios  []Prontuarios `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
+	Clientes     Clientes       `gorm:"foreignKey:ClientesID;references:ID" json:"cliente"`
+	Agendamentos []Agendamentos `gorm:"foreignKey:PetID" json:"agendamentos,omitempty"`
+	Prontuarios  []Prontuarios  `gorm:"foreignKey:PetID" json:"prontuarios,omitempty"`
 }

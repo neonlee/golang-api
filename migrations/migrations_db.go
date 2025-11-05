@@ -31,7 +31,7 @@ func (r *MigrationsDB) RunMigrations() error {
 		&models.Vendas{},
 		&models.VendaItem{},
 		&models.TiposServicos{},
-		&models.Agendamento{},
+		&models.Agendamentos{},
 		&models.ContaReceber{},
 		&models.ContaPagar{},
 		&models.CategoriaDespesa{},

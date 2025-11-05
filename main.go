@@ -32,6 +32,9 @@ func main() {
 	authRepo := repositories.NewAuthRepository(dbConnection, "token", time.Hour*24)
 	userRepo := repositories.NewUsuarioRepository(dbConnection)
 	medicoRepo := repositories.NewMedicoVeterinarioRepository(dbConnection)
+	agendamentoRepo := repositories.NewAgendamentoRepository(dbConnection)
+
+	agendamentoController := Controllers.NewAgendamentoController(agendamentoRepo)
 
 	clientsController := Controllers.NewClientsController(ClientsRepo)
 	petsController := Controllers.NewPetsController(petsRepo)
@@ -146,12 +149,25 @@ func main() {
 	{
 		medico.POST("/veterinario", medicoController.CreateVeterinario)
 		medico.POST("/disponibilidade", medicoController.AddDisponibilidade)
-		medico.GET("/especialidade", medicoController.AddEspecialidade)
+		medico.POST("/especialidade", medicoController.AddEspecialidade)
 		medico.DELETE("/disponibilidade/:id", medicoController.DeleteDisponibilidade)
 		medico.PUT("/especialidade/:id", medicoController.UpdateDisponibilidade)
 		medico.DELETE("/especialidade/:id", medicoController.DeleteEspecialidade)
 		medico.GET("/list", medicoController.ListarMedicosComEspecialidadesEDisponibilidades)
 
+	}
+
+	agendamento := server.Group("/agendamentos")
+	{
+		agendamento.POST("/", agendamentoController.Create)
+		agendamento.GET("/:id", agendamentoController.GetByID)
+		agendamento.PUT("/", agendamentoController.Update)
+		agendamento.PUT("/cancelar/:id", agendamentoController.Cancelar)
+		agendamento.GET("/list-by-data", agendamentoController.ListByData)
+		agendamento.GET("/list-by-periodo", agendamentoController.ListByPeriodo)
+		agendamento.GET("/list-by-pet", agendamentoController.ListByPet)
+		agendamento.GET("/verificar-disponibilidade", agendamentoController.VerificarDisponibilidade)
+		agendamento.GET("/horarios-disponiveis", agendamentoController.GetHorariosDisponiveis)
 	}
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
