@@ -33,9 +33,10 @@ func main() {
 	userRepo := repositories.NewUsuarioRepository(dbConnection)
 	medicoRepo := repositories.NewMedicoVeterinarioRepository(dbConnection)
 	agendamentoRepo := repositories.NewAgendamentoRepository(dbConnection)
+	compraRepo := repositories.NewComprasRepository(dbConnection)
 
 	agendamentoController := Controllers.NewAgendamentoController(agendamentoRepo)
-
+	comprasController := Controllers.NewCompraController(compraRepo)
 	clientsController := Controllers.NewClientsController(ClientsRepo)
 	petsController := Controllers.NewPetsController(petsRepo)
 	servicesController := Controllers.NewServicesController(servicesRepo)
@@ -169,6 +170,19 @@ func main() {
 		agendamento.GET("/list-by-pet", agendamentoController.ListByPet)
 		agendamento.GET("/verificar-disponibilidade", agendamentoController.VerificarDisponibilidade)
 		agendamento.GET("/horarios-disponiveis", agendamentoController.GetHorariosDisponiveis)
+	}
+
+	compra := server.Group("/compras")
+	{
+		compra.POST("/", comprasController.CreateCompra)
+		compra.GET("/:id", comprasController.GetCompraByID)
+		compra.PUT("/", comprasController.UpdateCompra)
+		compra.PUT("/cancelar/:id", comprasController.CancelarCompra)
+		compra.GET("/empresa/:empresa_id", comprasController.ListByEmpresa)
+		compra.GET("/itens/:compra_id", comprasController.GetItensByCompraID)
+		compra.GET("/fornecedor/:fornecedor_id", comprasController.ListByFornecedor)
+		compra.GET("/relatorio-periodo", comprasController.GetComprassPorPeriodo)
+		compra.GET("/resumo/:empresa_id", comprasController.GetResumoComprass)
 	}
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
