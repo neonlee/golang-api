@@ -84,11 +84,12 @@ func main() {
 
 	category := server.Group("/category")
 	{
-		// category.GET("/", categoryController.GetCategorys)
-		// category.GET("/:id", categoryController.Get)
+		category.GET("/get-with-products/:id", categoryController.GetWithProdutos)
+		category.GET("/:id", categoryController.GetByID)
 		category.POST("/", categoryController.Create)
 		category.PUT("/:id", categoryController.Update)
 		category.DELETE("/:id", categoryController.Delete)
+		category.GET("/empresa/:empresa_id", categoryController.ListByEmpresa)
 	}
 
 	services := server.Group("/services")

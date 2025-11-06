@@ -17,8 +17,13 @@ func NewCategoriaController(repo repositories.CategoriaRepository) *CategoriaCon
 	return &CategoriaController{Repo: repo}
 }
 
-func (c *CategoriaController) GetAll(ctx *gin.Context) {
-	categorias, err := c.Repo.GetWithProdutos(1)
+func (c *CategoriaController) GetWithProdutos(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	categorias, err := c.Repo.GetWithProdutos(uint(id))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -83,4 +88,18 @@ func (c *CategoriaController) Delete(ctx *gin.Context) {
 		return
 	}
 	ctx.Status(http.StatusNoContent)
+}
+
+func (c *CategoriaController) ListByEmpresa(ctx *gin.Context) {
+	empresaID, err := strconv.Atoi(ctx.Param("empresa_id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid empresa ID"})
+		return
+	}
+	categorias, err := c.Repo.ListByEmpresa(uint(empresaID))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, categorias)
 }
