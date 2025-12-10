@@ -58,6 +58,7 @@ func (r *estoqueRepository) GetHistoricoEstoque(produtoID uint) ([]models.Movime
 	err := r.db.
 		Where("produto_id = ?", produtoID).
 		Preload("Usuario").
+		Preload("Produto").
 		Order("created_at DESC").
 		Find(&movimentacoes).Error
 

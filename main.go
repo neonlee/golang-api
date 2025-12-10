@@ -34,7 +34,9 @@ func main() {
 	medicoRepo := repositories.NewMedicoVeterinarioRepository(dbConnection)
 	agendamentoRepo := repositories.NewAgendamentoRepository(dbConnection)
 	compraRepo := repositories.NewComprasRepository(dbConnection)
+	estoqueRepo := repositories.NewEstoqueRepository(dbConnection)
 
+	estoqueController := Controllers.NewEstoqueController(estoqueRepo)
 	agendamentoController := Controllers.NewAgendamentoController(agendamentoRepo)
 	comprasController := Controllers.NewCompraController(compraRepo)
 	clientsController := Controllers.NewClientsController(ClientsRepo)
@@ -47,6 +49,27 @@ func main() {
 	authController := Controllers.NewAuthController(authRepo)
 	userController := Controllers.NewUsuarioController(userRepo)
 	medicoController := Controllers.NewMedicoVeterinarioController(medicoRepo)
+	dashboardRepository := repositories.NewDashboardRepository(dbConnection)
+	dashboardController := Controllers.NewDashboardController(dashboardRepository)
+
+	dashboard := server.Group("/dashboard")
+	{
+		dashboard.GET("/resumo-vendas/:empresa_id", dashboardController.GetResumoVendas)
+		dashboard.GET("/resumo-financeiro/:empresa_id", dashboardController.GetResumoFinanceiro)
+		dashboard.GET("/proximos-agendamentos/:empresa_id", dashboardController.GetProximosAgendamentos)
+		dashboard.GET("/alerta-estoque/:empresa_id", dashboardController.GetAlertasEstoque)
+	}
+
+	estoque := server.Group("/estoque")
+	{
+		estoque.POST("/movimentar", estoqueController.MovimentarEstoque)
+		estoque.GET("/historico/:produto_id", estoqueController.GetHistoricoEstoque)
+		estoque.POST("/ajustar", estoqueController.AjustarEstoque)
+		estoque.GET("/saldo/:produto_id", estoqueController.GetSaldoAtual)
+		estoque.POST("/transferir", estoqueController.TransferirEstoque)
+		estoque.GET("/relatorio/:empresa_id", estoqueController.GetRelatorioEstoque)
+		estoque.GET("/movimentacoes/periodo/:empresa_id", estoqueController.GetMovimentacoesPorPeriodo)
+	}
 
 	server.POST("/auth/login", authController.Login)
 
