@@ -16,7 +16,7 @@ type FinanceiroRepository interface {
 	CreateContaPagar(conta *models.ContaPagar) error
 	GetContaPagarByID(id uint) (*models.ContaPagar, error)
 	PagarContaPagar(id uint, dataPagamento string, formaPagamento string) error
-	GetFluxoCaixa(empresaID uint, inicio time.Time, fim time.Time) (*responses.FluxoCaixa, error)
+	GetFluxoCaixa(empresaID uint, inicio string, fim string) (*responses.FluxoCaixa, error)
 	GetContasVencidas(empresaID uint) ([]models.ContaReceber, []models.ContaPagar, error)
 	GetDemonstrativo(empresaID uint, mes, ano int) (*responses.DemonstrativoFinanceiro, error)
 }
@@ -69,7 +69,7 @@ func (r *financeiroRepository) PagarContaPagar(id uint, dataPagamento string, fo
 		}).Error
 }
 
-func (r *financeiroRepository) GetFluxoCaixa(empresaID uint, inicio time.Time, fim time.Time) (*responses.FluxoCaixa, error) {
+func (r *financeiroRepository) GetFluxoCaixa(empresaID uint, inicio string, fim string) (*responses.FluxoCaixa, error) {
 	var fluxo responses.FluxoCaixa
 
 	// Receitas do período
@@ -91,8 +91,8 @@ func (r *financeiroRepository) GetFluxoCaixa(empresaID uint, inicio time.Time, f
 	fluxo.Receitas = receitas
 	fluxo.Despesas = despesas
 	fluxo.Saldo = receitas - despesas
-	fluxo.PeriodoInicio = inicio
-	fluxo.PeriodoFim = fim
+	// fluxo.PeriodoInicio = inicio
+	// fluxo.PeriodoFim = fim
 
 	return &fluxo, nil
 }

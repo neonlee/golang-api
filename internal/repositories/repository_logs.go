@@ -13,7 +13,7 @@ type LogRepository interface {
 	GetLogsByUsuario(usuarioID uint, limite int) ([]models.LogSistema, error)
 	GetLogsByModulo(empresaID uint, modulo string, inicio, fim string) ([]models.LogSistema, error)
 	GetLogsErro(empresaID uint, dias int) ([]models.LogSistema, error)
-	// GetEstatisticasUso(empresaID uint, periodo string) (*responses.EstatisticasUso, error)
+	// GetEst atisticasUso(empresaID uint, periodo string) (*responses.EstatisticasUso, error)
 }
 
 type logRepository struct {

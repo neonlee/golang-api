@@ -12,14 +12,13 @@ type PlanoRepository interface {
 	GetByID(id uint) (*models.Planos, error)
 	Update(plano *models.Planos) error
 	ListAll() ([]models.Planos, error)
-	GetByNome(nome string) (*models.Planos, error)
 }
 
 type planoRepository struct {
 	db *gorm.DB
 }
 
-func NewPlanoRepository(db *gorm.DB) PlanoRepository {
+func NewPlanosRepository(db *gorm.DB) PlanoRepository {
 	return &planoRepository{db: db}
 }
 
@@ -41,9 +40,4 @@ func (r *planoRepository) ListAll() ([]models.Planos, error) {
 	var planos []models.Planos
 	err := r.db.Find(&planos).Error
 	return planos, err
-}
-func (r *planoRepository) GetByNome(nome string) (*models.Planos, error) {
-	var plano models.Planos
-	err := r.db.Where("nome = ?", nome).First(&plano).Error
-	return &plano, err
 }

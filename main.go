@@ -35,7 +35,13 @@ func main() {
 	agendamentoRepo := repositories.NewAgendamentoRepository(dbConnection)
 	compraRepo := repositories.NewComprasRepository(dbConnection)
 	estoqueRepo := repositories.NewEstoqueRepository(dbConnection)
+	financeiroRepo := repositories.NewFinanceiroRepository(dbConnection)
+	planosRepo := repositories.NewPlanosRepository(dbConnection)
+	logRepo := repositories.NewLogRepository(dbConnection)
 
+	logController := Controllers.NewLogsController(logRepo)
+	planoController := Controllers.NewPlanosController(planosRepo)
+	financeiroController := Controllers.NewFinanceiroController(financeiroRepo)
 	estoqueController := Controllers.NewEstoqueController(estoqueRepo)
 	agendamentoController := Controllers.NewAgendamentoController(agendamentoRepo)
 	comprasController := Controllers.NewCompraController(compraRepo)
@@ -51,6 +57,31 @@ func main() {
 	medicoController := Controllers.NewMedicoVeterinarioController(medicoRepo)
 	dashboardRepository := repositories.NewDashboardRepository(dbConnection)
 	dashboardController := Controllers.NewDashboardController(dashboardRepository)
+
+	logs := server.Group("/logs")
+	{
+		logs.POST("/", logController.CreateLog)
+		logs.GET("/:id", logController.GetLogByID)
+		logs.GET("/usuario/:usuario_id", logController.GetLogsByUsuario)
+		logs.GET("/modulo", logController.GetLogsByModulo)
+		logs.GET("/erros/:empresa_id", logController.GetLogsErro)
+	}
+
+	planos := server.Group("/planos")
+	{
+		planos.POST("/", planoController.CreatePlano)
+		planos.GET("/:id", planoController.GetPlanoByID)
+		planos.PUT("/:id", planoController.UpdatePlano)
+		planos.GET("/", planoController.ListAllPlanos)
+	}
+
+	financeiro := server.Group("/financeiro")
+	{
+		financeiro.POST("/contas-receber", financeiroController.CreateContaReceber)
+		financeiro.GET("/contas-receber/:id", financeiroController.GetContaReceberByID)
+		financeiro.PUT("/contas-receber/baixar/:id", financeiroController.BaixarContaReceber)
+		// Additional financeiro routes can be added here
+	}
 
 	dashboard := server.Group("/dashboard")
 	{
